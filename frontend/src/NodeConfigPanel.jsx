@@ -2,13 +2,14 @@ import SchemaEditor from "./SchemaEditor";
 import PromptInput from "./PromptInput";
 
 const LLM_SUGGESTIONS = [
-  "gemini-3-flash-preview",
-  "gemini-3-pro-preview",
-  "gemini-2.5-flash",
-  "gemini-2.5-pro",
+  "groq/llama-3.1-8b-instant",
+  "groq/llama-3.3-70b-versatile",
+  "groq/llama-3.1-70b-versatile",
+  "gemini/gemini-2.5-flash",
+  "gemini/gemini-2.5-pro",
   "openai/gpt-4o",
   "openai/gpt-4o-mini",
-  "anthropic/claude-3-5-sonnet-20241022",
+  "anthropic/claude-sonnet-4-5",
   "openrouter/google/gemini-flash-1.5",
 ];
 
