@@ -30,17 +30,23 @@ def _get_client():
     return _client
 
 
-def _infra_ready(status: dict) -> bool:
-    vs = status.get("vectorstore_status", "")
-    gr = status.get("graph_status", "")
-    # Accept bool True, list [True,True], or string "active"/"ready"/"true"/"1"
+def _infra_ready(status) -> bool:
+    """Check InfraStatusResponse object or plain dict for ready vectorstore+graph."""
     def _ok(v):
         if isinstance(v, bool):
             return v
         if isinstance(v, list):
-            return all(bool(x) for x in v)
+            return len(v) > 0 and all(bool(x) for x in v)
         return str(v).lower() in ("active", "ready", "true", "1")
-    return _ok(vs) and _ok(gr)
+
+    # Pydantic InfraStatusResponse object: status.infra.vectorstore_status
+    if hasattr(status, "infra"):
+        infra = status.infra
+        return _ok(getattr(infra, "vectorstore_status", False)) and \
+               _ok(getattr(infra, "graph_status", False))
+    # Plain dict fallback
+    return _ok(status.get("vectorstore_status", "")) and \
+           _ok(status.get("graph_status", ""))
 
 
 async def ensure_tenant(workflow_id: str) -> None:
