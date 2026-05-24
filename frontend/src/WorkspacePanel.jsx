@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { loadGraph, saveGraph, generateWorkflow, previewWorkflow, listWorkflows, createWorkflow, deleteWorkflow, renameWorkflow, listRuns, getRunLog, listFiles, uploadFile, downloadFile, deleteFile } from './useWorkflowApi';
 import GlobalConfigBar from './GlobalConfigBar';
 import WorkflowSelector from './WorkflowSelector';
@@ -6,10 +6,11 @@ import WorkspaceToolbar from './WorkspaceToolbar';
 import GraphBuilder from './GraphBuilder';
 import NodeConfigPanel from './NodeConfigPanel';
 import NodeLogModal from './NodeLogModal';
+import MissionControl from './components/MissionControl/MissionControl';
 
 const DEFAULT_GRAPH = {
   version: '1',
-  global: { llm: 'gemini-3-flash-preview', human_in_the_loop: false },
+  global: { llm: 'groq/llama-3.3-70b-versatile', human_in_the_loop: false },
   nodes: [],
   edges: [],
 };
@@ -21,7 +22,7 @@ const TEMPLATES = [
     desc: 'Navigate to a page, extract structured data',
     graph: {
       version: '1',
-      global: { llm: 'gemini-3-flash-preview', human_in_the_loop: false },
+      global: { llm: 'groq/llama-3.3-70b-versatile', human_in_the_loop: false },
       nodes: [
         { id: 'n1', type: 'Navigate', label: 'Open page', position: { x: 180, y: 60 }, config: { target: 'https://example.com', max_steps: null, extra_info: '', llm: null } },
         { id: 'n2', type: 'Read', label: 'Extract data', position: { x: 180, y: 200 }, config: { task: 'Extract the main heading and description', max_steps: null, llm: null },
@@ -38,7 +39,7 @@ const TEMPLATES = [
     desc: 'Log into a site and submit a form',
     graph: {
       version: '1',
-      global: { llm: 'gemini-3-flash-preview', human_in_the_loop: false },
+      global: { llm: 'groq/llama-3.3-70b-versatile', human_in_the_loop: false },
       nodes: [
         { id: 'n1', type: 'Navigate', label: 'Open login page', position: { x: 180, y: 60 }, config: { target: 'https://example.com/login', max_steps: null, extra_info: '', llm: null } },
         { id: 'n2', type: 'Fill', label: 'Fill login form', position: { x: 180, y: 200 }, config: { target: 'login form', data: { email: '{{secrets.EMAIL}}', password: '{{secrets.PASSWORD}}' }, llm: null } },
@@ -58,7 +59,7 @@ const TEMPLATES = [
     desc: 'Repeat an action until a condition passes',
     graph: {
       version: '1',
-      global: { llm: 'gemini-3-flash-preview', human_in_the_loop: false },
+      global: { llm: 'groq/llama-3.3-70b-versatile', human_in_the_loop: false },
       nodes: [
         { id: 'n1', type: 'Navigate', label: 'Open page',      position: { x: 180, y: 60  }, config: { target: 'https://example.com', max_steps: null, extra_info: '', llm: null } },
         { id: 'n2', type: 'Check',    label: 'Succeeded?',     position: { x: 180, y: 200 }, config: { condition: 'The action completed successfully and the expected result is visible', max_steps: null, llm: null } },
@@ -77,7 +78,7 @@ const TEMPLATES = [
     desc: 'Scrape pricing & models from multiple AI platforms, then analyse in ipython',
     graph: {
       version: '1',
-      global: { llm: 'gemini-3-flash-preview', human_in_the_loop: false },
+      global: { llm: 'groq/llama-3.3-70b-versatile', human_in_the_loop: false },
       nodes: [
         {
           id: 'n1', type: 'Code', label: 'Setup', position: { x: 180, y: 60 },
@@ -164,7 +165,7 @@ const TEMPLATES = [
     desc: 'Load a CSV and process each row',
     graph: {
       version: '1',
-      global: { llm: 'gemini-3-flash-preview', human_in_the_loop: false },
+      global: { llm: 'groq/llama-3.3-70b-versatile', human_in_the_loop: false },
       nodes: [
         { id: 'n1', type: 'Code',    label: 'Load CSV',      position: { x: 180, y: 60  }, config: { code: "import csv\nwith open('/workspace/uploads/data.csv') as f:\n    rows = list(csv.DictReader(f))", llm: null } },
         { id: 'n2', type: 'ForEach', label: 'For each row',  position: { x: 180, y: 200 }, config: { items_expr: 'rows', loop_var: 'row', llm: null } },
@@ -811,7 +812,7 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
             <div style={{ flex: `0 0 ${bottomTab === 'files' ? 320 : 160}px`, margin: '0 8px 8px', background: '#0d1117', borderRadius: 10, border: '1px solid #30363d', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               {/* Tab bar */}
               <div style={{ padding: '0 8px', background: '#161b22', borderBottom: '1px solid #30363d', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, minHeight: 30 }}>
-                {['preview', 'runs', 'files'].map(tab => (
+                {['preview', 'runs', 'files', 'memory'].map(tab => (
                   <button
                     key={tab}
                     onClick={() => {
@@ -821,13 +822,17 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
                     }}
                     style={{
                       fontSize: 12, padding: '4px 10px', background: 'none', border: 'none', cursor: 'pointer',
-                      color: bottomTab === tab ? '#e6edf3' : '#8b949e',
-                      borderBottom: bottomTab === tab ? '2px solid #58a6ff' : '2px solid transparent',
+                      color: tab === 'memory'
+                        ? (bottomTab === tab ? '#a78bfa' : '#6b6b8a')
+                        : (bottomTab === tab ? '#e6edf3' : '#8b949e'),
+                      borderBottom: bottomTab === tab
+                        ? `2px solid ${tab === 'memory' ? '#6d28d9' : '#58a6ff'}`
+                        : '2px solid transparent',
                       fontFamily: 'Consolas, monospace',
                       fontWeight: bottomTab === tab ? 600 : 400,
                     }}
                   >
-                    {tab === 'preview' ? 'workflow.py' : tab === 'runs' ? 'Runs' : 'Files'}
+                    {tab === 'preview' ? 'workflow.py' : tab === 'runs' ? 'Runs' : tab === 'files' ? 'Files' : '🧠 Memory'}
                   </button>
                 ))}
                 {bottomTab === 'preview' && (
@@ -863,6 +868,10 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
                       <span style={{ fontSize: 10, color: '#8b949e', minWidth: 36, textAlign: 'right' }}>{fmtDuration(run.started_at, run.finished_at)}</span>
                     </div>
                   ))}
+                </div>
+              ) : bottomTab === 'memory' ? (
+                <div style={{ flex: 1, overflow: 'hidden' }}>
+                  <MissionControl workflowId={currentWorkflowId} />
                 </div>
               ) : (
                 /* Files tab */
