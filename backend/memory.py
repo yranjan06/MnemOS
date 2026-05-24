@@ -183,14 +183,43 @@ async def get_all(workflow_id: str, limit: int = 50) -> list[dict]:
         result = await client.recall.recall_preferences(
             tenant_id=workflow_id,
             sub_tenant_id=workflow_id,
-            query="all observations outcomes errors",
+            query="all observations outcomes errors memories",
             mode="fast",
             max_results=limit,
         )
-        items = result if isinstance(result, list) else result.get("results", [])
+        chunks = getattr(result, "chunks", None)
+        if chunks is not None:
+            return [
+                {
+                    "key": _extract_key(getattr(c, "chunk_content", "")),
+                    "value": _extract_value(getattr(c, "chunk_content", "")),
+                    "score": getattr(c, "relevancy_score", 0),
+                    "created_at": getattr(c, "source_upload_time", ""),
+                }
+                for c in chunks
+            ]
+        if isinstance(result, list):
+            return [_normalise(m) for m in result]
+        items = result.get("results", []) if isinstance(result, dict) else []
         return [_normalise(m) for m in items]
     except Exception:
         return []
+
+
+def _extract_key(text: str) -> str:
+    """Extract key from '[key]: value' format stored by remember()."""
+    text = text.strip()
+    if text.startswith("[") and "]: " in text:
+        return text[1:text.index("]: ")]
+    return text[:40]
+
+
+def _extract_value(text: str) -> str:
+    """Extract value from '[key]: value' format stored by remember()."""
+    text = text.strip()
+    if text.startswith("[") and "]: " in text:
+        return text[text.index("]: ") + 3:]
+    return text
 
 
 def _normalise(m: Any) -> dict:
