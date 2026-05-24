@@ -1,18 +1,53 @@
-/* Removed default Vite styles to prevent interfering with App layout */
-
-/* MnemOS design tokens */
+/* MnemOS — pixel dark theme */
 :root {
-  --mnemos-purple: #6d28d9;
-  --mnemos-teal:   #0d9488;
-  --mnemos-red:    #dc2626;
-  --mnemos-blue:   #0369a1;
+  --bg:        #0f0f0f;
+  --bg2:       #1c1c1c;
+  --bg3:       #080810;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.12);
+  --text:      #f0f0ee;
+  --text-dim:  #888880;
+  --text-mute: #555550;
+  --lime:      #d4f53c;
+  --lime-dim:  #8aaa18;
+  --lime-bg:   #1a2200;
+  --blue:      #6ec6f5;
+  --font:      'Courier New', monospace;
 }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  overflow: hidden;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3a3a3a; }
+
+/* ReactFlow overrides */
+.react-flow__background { background: var(--bg) !important; }
+.react-flow__background pattern circle { fill: #2a2a28 !important; }
+.react-flow__edge-path { stroke: rgba(212,245,60,0.3) !important; }
+.react-flow__edge.selected .react-flow__edge-path { stroke: #d4f53c !important; }
+.react-flow__connection-path { stroke: #d4f53c !important; }
+.react-flow__controls { background: #1c1c1c !important; border: 1px solid rgba(255,255,255,0.07) !important; border-radius: 8px !important; }
+.react-flow__controls-button { background: #1c1c1c !important; border-color: rgba(255,255,255,0.07) !important; fill: #888880 !important; }
+.react-flow__controls-button:hover { background: #2a2a2a !important; fill: #d4f53c !important; }
+.react-flow__minimap { background: #1c1c1c !important; border: 1px solid rgba(255,255,255,0.07) !important; }
 
 @keyframes node-pulse {
-  0%, 100% { box-shadow: 0 0 0 2px var(--node-color, #2563eb); }
-  50%       { box-shadow: 0 0 0 5px color-mix(in srgb, var(--node-color, #2563eb) 40%, transparent); }
+  0%, 100% { box-shadow: 0 0 0 2px var(--node-color, #d4f53c); }
+  50%       { box-shadow: 0 0 0 6px color-mix(in srgb, var(--node-color, #d4f53c) 25%, transparent); }
 }
+.node-running { animation: node-pulse 1s ease-in-out infinite; }
 
-.node-running {
-  animation: node-pulse 1s ease-in-out infinite;
-}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.status-blink { animation: blink 1.2s ease-in-out infinite; }

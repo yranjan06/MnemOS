@@ -13,13 +13,23 @@ const LLM_SUGGESTIONS = [
   "openrouter/google/gemini-flash-1.5",
 ];
 
+const inputBase = {
+  background: "#1c1c1c",
+  border: "1px solid rgba(255,255,255,0.1)",
+  borderRadius: 4,
+  color: "#f0f0ee",
+  outline: "none",
+  fontFamily: "'Courier New', monospace",
+};
+
 const styles = {
   panel: {
     padding: 12,
-    background: "#fff",
+    background: "#0f0f0f",
     height: "100%",
     overflowY: "auto",
     fontSize: 12,
+    fontFamily: "'Courier New', monospace",
   },
   header: {
     display: "flex",
@@ -27,74 +37,75 @@ const styles = {
     alignItems: "center",
     marginBottom: 12,
   },
-  title: { fontSize: 13, fontWeight: 700, color: "#1a1a1a" },
+  title: { fontSize: 13, fontWeight: 700, color: "#f0f0ee" },
   badge: {
     fontSize: 10,
-    padding: "2px 6px",
+    padding: "2px 7px",
     borderRadius: 4,
-    fontWeight: 600,
-    color: "#fff",
+    fontWeight: 700,
+    color: "#0f0f0f",
+    letterSpacing: "0.04em",
   },
   closeBtn: {
     fontSize: 11,
     padding: "4px 10px",
-    border: "1px solid #ddd",
+    border: "1px solid rgba(255,255,255,0.12)",
     borderRadius: 4,
-    background: "#fff",
+    background: "transparent",
+    color: "#888880",
     cursor: "pointer",
+    fontFamily: "'Courier New', monospace",
   },
   fieldGroup: { marginBottom: 10 },
   label: {
     display: "block",
-    fontSize: 11,
-    fontWeight: 600,
-    color: "#555",
+    fontSize: 10,
+    fontWeight: 700,
+    color: "#555550",
     marginBottom: 3,
+    textTransform: "uppercase",
+    letterSpacing: "0.08em",
   },
   input: {
+    ...inputBase,
     width: "100%",
-    fontSize: 12,
+    fontSize: 11,
     padding: "5px 7px",
-    border: "1px solid #ddd",
-    borderRadius: 4,
     boxSizing: "border-box",
   },
   textarea: {
-    width: "100%",
-    fontSize: 12,
-    padding: "5px 7px",
-    border: "1px solid #ddd",
-    borderRadius: 4,
-    boxSizing: "border-box",
-    minHeight: 60,
-    fontFamily: "inherit",
-    resize: "vertical",
-  },
-  codeArea: {
+    ...inputBase,
     width: "100%",
     fontSize: 11,
     padding: "5px 7px",
-    border: "1px solid #ddd",
-    borderRadius: 4,
     boxSizing: "border-box",
-    minHeight: 80,
-    fontFamily: "Consolas, monospace",
+    minHeight: 60,
     resize: "vertical",
   },
-  select: {
+  codeArea: {
+    ...inputBase,
     width: "100%",
-    fontSize: 12,
+    fontSize: 11,
     padding: "5px 7px",
-    border: "1px solid #ddd",
-    borderRadius: 4,
     boxSizing: "border-box",
+    minHeight: 80,
+    resize: "vertical",
+    color: "#8aaa18",
+  },
+  select: {
+    ...inputBase,
+    width: "100%",
+    fontSize: 11,
+    padding: "5px 7px",
+    boxSizing: "border-box",
+    cursor: "pointer",
+    appearance: "none",
   },
   numberInput: {
+    ...inputBase,
     width: 70,
-    fontSize: 12,
+    fontSize: 11,
     padding: "5px 7px",
-    border: "1px solid #ddd",
-    borderRadius: 4,
   },
   kvRow: {
     display: "flex",
@@ -103,27 +114,28 @@ const styles = {
     alignItems: "center",
   },
   kvInput: {
+    ...inputBase,
     flex: 1,
     fontSize: 11,
     padding: "3px 5px",
-    border: "1px solid #ddd",
-    borderRadius: 4,
   },
   kvAddBtn: {
     fontSize: 10,
-    padding: "2px 6px",
-    border: "1px solid #ccc",
+    padding: "2px 7px",
+    border: "1px solid rgba(255,255,255,0.1)",
     borderRadius: 4,
-    background: "#fff",
+    background: "transparent",
+    color: "#555550",
     cursor: "pointer",
     marginTop: 4,
+    fontFamily: "'Courier New', monospace",
   },
   kvRemoveBtn: {
     fontSize: 10,
     padding: "2px 5px",
     border: "none",
     background: "transparent",
-    color: "#999",
+    color: "#3a3a3a",
     cursor: "pointer",
   },
 };
@@ -143,8 +155,8 @@ const TYPE_COLORS = {
   Plan: "#0369a1",
 };
 
-const divider = { border: 'none', borderTop: '1px solid #f0f0f0', margin: '10px 0 6px' };
-const sectionLabel = { fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#bbb', marginBottom: 6 };
+const divider = { border: 'none', borderTop: '1px solid rgba(255,255,255,0.06)', margin: '10px 0 6px' };
+const sectionLabel = { fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#3a3a3a', marginBottom: 6 };
 
 function KeyValueEditor({ data, onChange }) {
   const entries = Object.entries(data || {});
@@ -223,10 +235,10 @@ function McpServersEditor({ servers, onChange }) {
         <button style={styles.kvAddBtn} onClick={addServer}>+ Add</button>
       </div>
       {servers.length === 0 && (
-        <div style={{ fontSize: 10, color: '#bbb', marginBottom: 6 }}>No MCP servers. Click + Add to connect one.</div>
+        <div style={{ fontSize: 10, color: '#3a3a3a', marginBottom: 6 }}>No MCP servers. Click + Add to connect one.</div>
       )}
       {servers.map((srv, i) => (
-        <div key={i} style={{ border: '1px solid #f0f0f0', borderRadius: 5, padding: '7px 8px', marginBottom: 7, background: '#fafafa' }}>
+        <div key={i} style={{ border: '1px solid rgba(255,255,255,0.07)', borderRadius: 5, padding: '7px 8px', marginBottom: 7, background: '#1c1c1c' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
             <select
               style={{ ...styles.select, width: 90, padding: '3px 5px', fontSize: 11 }}
@@ -301,7 +313,7 @@ export default function NodeConfigPanel({ node, onUpdate, onClose, onDelete }) {
           </span>
           <span
             title="Use this ID to reference this node's output: {{node_id.field}}"
-            style={{ fontSize: 9, color: '#bbb', fontFamily: 'monospace', cursor: 'default', userSelect: 'all' }}
+            style={{ fontSize: 9, color: '#3a3a3a', fontFamily: "'Courier New', monospace", cursor: 'default', userSelect: 'all' }}
           >
             {node.id}
           </span>
@@ -422,7 +434,7 @@ export default function NodeConfigPanel({ node, onUpdate, onClose, onDelete }) {
               placeholder={"open('/workspace/uploads/links.txt').read().splitlines()\n# or: ['url1', 'url2']\n# or: read_node_out.urls"}
               minHeight={70}
             />
-            <span style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>Any Python expression returning an iterable. Use a Code node above for imports.</span>
+            <span style={{ fontSize: 10, color: '#3a3a3a', marginTop: 2 }}>Any Python expression returning an iterable. Use a Code node above for imports.</span>
           </div>
           <div style={styles.fieldGroup}>
             <label style={styles.label}>Loop variable name</label>
@@ -432,7 +444,7 @@ export default function NodeConfigPanel({ node, onUpdate, onClose, onDelete }) {
               onChange={(e) => updateConfig("loop_var", e.target.value)}
               placeholder="item"
             />
-            <span style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>Reference as {'{{item}}'} in downstream node targets and tasks</span>
+            <span style={{ fontSize: 10, color: '#3a3a3a', marginTop: 2 }}>Reference as {'{{item}}'} in downstream node targets and tasks</span>
           </div>
         </>
       )}
@@ -447,7 +459,7 @@ export default function NodeConfigPanel({ node, onUpdate, onClose, onDelete }) {
             placeholder={"ffmpeg\nimagemagick\nwkhtmltopdf"}
             minHeight={70}
           />
-          <span style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>One package per line (or comma-separated). Runs apt-get install before the workflow starts.</span>
+          <span style={{ fontSize: 10, color: '#3a3a3a', marginTop: 2 }}>One package per line (or comma-separated). Runs apt-get install before the workflow starts.</span>
         </div>
       )}
 
@@ -456,7 +468,7 @@ export default function NodeConfigPanel({ node, onUpdate, onClose, onDelete }) {
           <div style={styles.fieldGroup}>
             <label style={styles.label}>Key</label>
             <input style={styles.input} value={config.key || ""} onChange={(e) => updateConfig("key", e.target.value)} placeholder="e.g. product_price" />
-            <span style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>Label for this memory entry in HydraDB.</span>
+            <span style={{ fontSize: 10, color: '#3a3a3a', marginTop: 2 }}>Label for this memory entry in HydraDB.</span>
           </div>
           <div style={styles.fieldGroup}>
             <label style={styles.label}>Value</label>
@@ -501,7 +513,7 @@ export default function NodeConfigPanel({ node, onUpdate, onClose, onDelete }) {
               placeholder={"What the agent should try to do — e.g. 'Find and extract the book price on the page'"}
               minHeight={60}
             />
-            <span style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>On failure, LLM queries memory for past errors and proposes an alternative approach, then retries.</span>
+            <span style={{ fontSize: 10, color: '#3a3a3a', marginTop: 2 }}>On failure, LLM queries memory for past errors and proposes an alternative approach, then retries.</span>
           </div>
           <div style={styles.fieldGroup}>
             <label style={styles.label}>Max retries</label>
@@ -530,7 +542,7 @@ export default function NodeConfigPanel({ node, onUpdate, onClose, onDelete }) {
               onChange={(e) => updateConfig("options", e.target.value.split('\n').map(s => s.trim()).filter(Boolean))}
               placeholder={"alert_price_change\nlog_no_change\ninvestigate_further"}
             />
-            <span style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>LLM picks one option based on memory context. Use snake_case.</span>
+            <span style={{ fontSize: 10, color: '#3a3a3a', marginTop: 2 }}>LLM picks one option based on memory context. Use snake_case.</span>
           </div>
         </>
       )}
@@ -617,7 +629,7 @@ export default function NodeConfigPanel({ node, onUpdate, onClose, onDelete }) {
           <hr style={{ ...divider, marginTop: 14 }} />
           <button
             onClick={() => onDelete(node.id)}
-            style={{ width: '100%', marginTop: 4, padding: '6px', borderRadius: 5, border: '1px solid #fca5a5', background: 'transparent', color: '#dc2626', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}
+            style={{ width: '100%', marginTop: 4, padding: '6px', borderRadius: 5, border: '1px solid rgba(239,68,68,0.3)', background: 'transparent', color: '#ef4444', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: "'Courier New', monospace", letterSpacing: '0.02em' }}
           >
             Delete node
           </button>

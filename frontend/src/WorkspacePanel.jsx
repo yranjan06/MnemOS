@@ -677,7 +677,7 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
   }, [logModal?.content]);
 
   if (loading) {
-    return <div style={{ padding: 20, color: '#555', fontSize: 13 }}>Loading workflow builder...</div>;
+    return <div style={{ padding: 20, color: '#888880', fontSize: 13, fontFamily: "'Courier New', monospace" }}>Loading workflow builder…</div>;
   }
 
   return (
@@ -685,46 +685,47 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
       {errorToast && (
         <div style={{
           position: 'fixed', top: 12, left: '50%', transform: 'translateX(-50%)',
-          background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626',
+          background: '#1a0a0a', border: '1px solid rgba(239,68,68,0.4)', color: '#ef4444',
           padding: '8px 14px 8px 12px', borderRadius: 7, fontSize: 12, zIndex: 9999,
-          maxWidth: 520, boxShadow: '0 2px 12px rgba(220,38,38,0.12)',
+          maxWidth: 520, boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
           display: 'flex', alignItems: 'flex-start', gap: 8,
+          fontFamily: "'Courier New', monospace",
         }}>
           <span style={{ fontWeight: 700, flexShrink: 0 }}>⚠</span>
           <span style={{ flex: 1, wordBreak: 'break-word' }}>{errorToast}</span>
           <button
             onClick={() => setErrorToast(null)}
-            style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: 14, padding: 0, lineHeight: 1, flexShrink: 0 }}
+            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 14, padding: 0, lineHeight: 1, flexShrink: 0 }}
           >×</button>
         </div>
       )}
       {showTemplatePicker && (
         <div
           onClick={() => setShowTemplatePicker(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 12, padding: '24px 24px 20px', width: 440, boxShadow: '0 8px 40px rgba(0,0,0,0.18)' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1a', marginBottom: 4 }}>New workflow</div>
-            <div style={{ fontSize: 12, color: '#888', marginBottom: 16 }}>Start from a template or a blank canvas.</div>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '22px 22px 18px', width: 440, boxShadow: '0 16px 48px rgba(0,0,0,0.6)', fontFamily: "'Courier New', monospace" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#f0f0ee', marginBottom: 3, letterSpacing: '0.02em' }}>// New workflow //</div>
+            <div style={{ fontSize: 11, color: '#555550', marginBottom: 16 }}>Start from a template or a blank canvas.</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
               {TEMPLATES.map(t => (
                 <button
                   key={t.name}
                   onClick={() => handleWorkflowCreate(t)}
-                  style={{ textAlign: 'left', padding: '10px 12px', borderRadius: 8, border: '1.5px solid #e5e4e0', background: '#fafaf9', cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#1a1a1a'; e.currentTarget.style.background = '#f4f3f0'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#e5e4e0'; e.currentTarget.style.background = '#fafaf9'; }}
+                  style={{ textAlign: 'left', padding: '10px 12px', borderRadius: 7, border: '1px solid rgba(255,255,255,0.07)', background: '#1c1c1c', cursor: 'pointer', fontFamily: "'Courier New', monospace" }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,245,60,0.3)'; e.currentTarget.style.background = '#1a2200'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.background = '#1c1c1c'; }}
                 >
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#1a1a1a', marginBottom: 2 }}>{t.name}</div>
-                  <div style={{ fontSize: 11, color: '#888', lineHeight: 1.4 }}>{t.desc}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#f0f0ee', marginBottom: 3 }}>{t.name}</div>
+                  <div style={{ fontSize: 10, color: '#555550', lineHeight: 1.4 }}>{t.desc}</div>
                 </button>
               ))}
             </div>
             <button
               onClick={() => handleWorkflowCreate(null)}
-              style={{ width: '100%', padding: '8px 12px', borderRadius: 7, border: '1px solid #e5e4e0', background: '#fff', fontSize: 12, color: '#555', cursor: 'pointer', textAlign: 'center' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#f4f3f0'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#fff'; }}
+              style={{ width: '100%', padding: '8px 12px', borderRadius: 6, border: '1px dashed rgba(255,255,255,0.1)', background: 'transparent', fontSize: 11, color: '#555550', cursor: 'pointer', textAlign: 'center', fontFamily: "'Courier New', monospace" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = '#888880'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#555550'; }}
             >
               Blank workflow
             </button>
@@ -732,17 +733,17 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
         </div>
       )}
       {inputsModal && (
-        <div onClick={() => setInputsModal(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#fff', borderRadius: 12, padding: '22px 22px 18px', width: 380, boxShadow: '0 8px 40px rgba(0,0,0,0.18)' }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a', marginBottom: 4 }}>Run with inputs</div>
-            <div style={{ fontSize: 11, color: '#888', marginBottom: 14 }}>Fill in the workflow inputs before starting.</div>
+        <div onClick={() => setInputsModal(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, padding: '22px 22px 18px', width: 380, boxShadow: '0 16px 48px rgba(0,0,0,0.6)', fontFamily: "'Courier New', monospace" }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#f0f0ee', marginBottom: 3, letterSpacing: '0.02em' }}>// Run with inputs //</div>
+            <div style={{ fontSize: 11, color: '#555550', marginBottom: 14 }}>Fill in the workflow inputs before starting.</div>
             {inputsModal.fields.map(f => (
               <div key={f.name} style={{ marginBottom: 10 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#555', marginBottom: 3 }}>
-                  {f.name}{f.description ? <span style={{ fontWeight: 400, color: '#aaa', marginLeft: 6 }}>{f.description}</span> : null}
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#888880', marginBottom: 3, letterSpacing: '0.02em' }}>
+                  {f.name}{f.description ? <span style={{ fontWeight: 400, color: '#3a3a3a', marginLeft: 6 }}>{f.description}</span> : null}
                 </div>
                 <input
-                  style={{ width: '100%', fontSize: 12, padding: '5px 8px', border: '1px solid #ddd', borderRadius: 5, boxSizing: 'border-box', fontFamily: 'Consolas, monospace' }}
+                  style={{ width: '100%', fontSize: 11, padding: '5px 8px', background: '#1c1c1c', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, boxSizing: 'border-box', fontFamily: "'Courier New', monospace", color: '#f0f0ee', outline: 'none' }}
                   placeholder={f.type || 'string'}
                   value={inputsModal.values[f.name] || ''}
                   onChange={e => setInputsModal(prev => ({ ...prev, values: { ...prev.values, [f.name]: e.target.value } }))}
@@ -750,8 +751,8 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
               </div>
             ))}
             <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-              <button onClick={() => setInputsModal(null)} style={{ flex: 1, padding: '7px', borderRadius: 6, border: '1px solid #e5e4e0', background: '#fff', fontSize: 12, color: '#555', cursor: 'pointer' }}>Cancel</button>
-              <button onClick={() => { const v = inputsModal.values; setInputsModal(null); handleRun(v); }} style={{ flex: 2, padding: '7px', borderRadius: 6, border: 'none', background: '#1a1a1a', color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>▶ Run</button>
+              <button onClick={() => setInputsModal(null)} style={{ flex: 1, padding: '7px', borderRadius: 5, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', fontSize: 11, color: '#555550', cursor: 'pointer', fontFamily: "'Courier New', monospace" }}>Cancel</button>
+              <button onClick={() => { const v = inputsModal.values; setInputsModal(null); handleRun(v); }} style={{ flex: 2, padding: '7px', borderRadius: 5, border: 'none', background: '#d4f53c', color: '#0f0f0f', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: "'Courier New', monospace", letterSpacing: '0.02em' }}>▶ Run</button>
             </div>
           </div>
         </div>
@@ -813,9 +814,9 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
                 onOpenLog={setNodeLogModal}
               />
             </div>
-            <div style={{ flex: `0 0 ${bottomTab === 'files' || bottomTab === 'memory' ? 320 : 160}px`, margin: '0 8px 8px', background: '#0d1117', borderRadius: 10, border: '1px solid #30363d', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ flex: `0 0 ${bottomTab === 'files' || bottomTab === 'memory' ? 320 : 160}px`, margin: '0 8px 8px', background: '#080810', borderRadius: 8, border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               {/* Tab bar */}
-              <div style={{ padding: '0 8px', background: '#161b22', borderBottom: '1px solid #30363d', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, minHeight: 30 }}>
+              <div style={{ padding: '0 8px', background: '#0f0f0f', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, minHeight: 30 }}>
                 {['preview', 'runs', 'files', 'memory'].map(tab => (
                   <button
                     key={tab}
@@ -825,51 +826,48 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
                       if (tab === 'files') fetchFiles('');
                     }}
                     style={{
-                      fontSize: 12, padding: '4px 10px', background: 'none', border: 'none', cursor: 'pointer',
-                      color: tab === 'memory'
-                        ? (bottomTab === tab ? '#a78bfa' : '#6b6b8a')
-                        : (bottomTab === tab ? '#e6edf3' : '#8b949e'),
-                      borderBottom: bottomTab === tab
-                        ? `2px solid ${tab === 'memory' ? '#6d28d9' : '#58a6ff'}`
-                        : '2px solid transparent',
-                      fontFamily: 'Consolas, monospace',
-                      fontWeight: bottomTab === tab ? 600 : 400,
+                      fontSize: 11, padding: '4px 10px', background: 'none', border: 'none', cursor: 'pointer',
+                      color: bottomTab === tab ? '#d4f53c' : '#555550',
+                      borderBottom: bottomTab === tab ? '2px solid #d4f53c' : '2px solid transparent',
+                      fontFamily: "'Courier New', monospace",
+                      fontWeight: bottomTab === tab ? 700 : 400,
+                      letterSpacing: '0.03em',
                     }}
                   >
-                    {tab === 'preview' ? 'workflow.py' : tab === 'runs' ? 'Runs' : tab === 'files' ? 'Files' : '🧠 Memory'}
+                    {tab === 'preview' ? 'workflow.py' : tab === 'runs' ? 'runs' : tab === 'files' ? 'files' : '🧠 memory'}
                   </button>
                 ))}
                 {bottomTab === 'preview' && (
                   <button
                     onClick={() => navigator.clipboard.writeText(previewCode)}
-                    style={{ marginLeft: 'auto', fontSize: 11, color: '#8b949e', background: 'none', border: '1px solid #30363d', borderRadius: 4, padding: '2px 8px', cursor: 'pointer' }}
+                    style={{ marginLeft: 'auto', fontSize: 10, color: '#555550', background: 'none', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 4, padding: '2px 8px', cursor: 'pointer', fontFamily: "'Courier New', monospace" }}
                   >
-                    Copy
+                    copy
                   </button>
                 )}
               </div>
 
               {/* Tab content */}
               {bottomTab === 'preview' ? (
-                <pre style={{ fontSize: 10, lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#e6edf3', margin: 0, padding: '6px 10px', fontFamily: 'Consolas, monospace', overflow: 'auto', flex: 1 }}>
+                <pre style={{ fontSize: 10, lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: '#8aaa18', margin: 0, padding: '6px 10px', fontFamily: "'Courier New', monospace", overflow: 'auto', flex: 1 }}>
                   {previewCode}
                 </pre>
               ) : bottomTab === 'runs' ? (
                 <div style={{ overflow: 'auto', flex: 1, padding: '4px 0' }}>
                   {runs.length === 0 ? (
-                    <div style={{ fontSize: 11, color: '#8b949e', padding: '12px 12px', textAlign: 'center' }}>No runs yet.</div>
+                    <div style={{ fontSize: 11, color: '#3a3a3a', padding: '12px', textAlign: 'center', fontFamily: "'Courier New', monospace" }}>No runs yet.</div>
                   ) : runs.map(run => (
                     <div
                       key={run.id}
                       onClick={() => openLog(run.id)}
                       style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 12px', cursor: 'pointer', borderRadius: 4 }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#161b22'}
+                      onMouseEnter={e => e.currentTarget.style.background = '#1c1c1c'}
                       onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                     >
-                      <span style={{ fontSize: 10, color: STATUS_DOT[run.status] || '#8b949e' }}>●</span>
-                      <span style={{ fontSize: 10, color: '#e6edf3', flex: 1, fontFamily: 'Consolas, monospace' }}>{run.status}</span>
-                      <span style={{ fontSize: 10, color: '#8b949e' }}>{timeAgo(run.started_at)}</span>
-                      <span style={{ fontSize: 10, color: '#8b949e', minWidth: 36, textAlign: 'right' }}>{fmtDuration(run.started_at, run.finished_at)}</span>
+                      <span style={{ fontSize: 10, color: STATUS_DOT[run.status] || '#555550' }}>●</span>
+                      <span style={{ fontSize: 10, color: '#888880', flex: 1, fontFamily: "'Courier New', monospace" }}>{run.status}</span>
+                      <span style={{ fontSize: 10, color: '#555550', fontFamily: "'Courier New', monospace" }}>{timeAgo(run.started_at)}</span>
+                      <span style={{ fontSize: 10, color: '#3a3a3a', minWidth: 36, textAlign: 'right', fontFamily: "'Courier New', monospace" }}>{fmtDuration(run.started_at, run.finished_at)}</span>
                     </div>
                   ))}
                 </div>
@@ -881,16 +879,16 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
                 /* Files tab */
                 <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
                   {/* Breadcrumb + upload */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderBottom: '1px solid #30363d', flexShrink: 0, flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderBottom: '1px solid rgba(255,255,255,0.07)', flexShrink: 0, flexWrap: 'wrap' }}>
                     <span
-                      style={{ fontSize: 11, color: '#58a6ff', cursor: 'pointer', fontFamily: 'Consolas, monospace' }}
+                      style={{ fontSize: 11, color: '#8aaa18', cursor: 'pointer', fontFamily: "'Courier New', monospace" }}
                       onClick={() => fetchFiles('')}
                     >/workspace</span>
                     {filePath && filePath.split('/').filter(Boolean).map((seg, i, arr) => (
-                      <span key={i} style={{ fontSize: 11, fontFamily: 'Consolas, monospace', color: '#8b949e' }}>
+                      <span key={i} style={{ fontSize: 11, fontFamily: "'Courier New', monospace", color: '#555550' }}>
                         {'/'}
                         <span
-                          style={{ color: '#58a6ff', cursor: 'pointer' }}
+                          style={{ color: '#8aaa18', cursor: 'pointer' }}
                           onClick={() => fetchFiles(arr.slice(0, i + 1).join('/'))}
                         >{seg}</span>
                       </span>
@@ -898,8 +896,8 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
                     <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
                       <button
                         onClick={() => fileInputRef.current?.click()}
-                        style={{ fontSize: 11, padding: '2px 8px', background: '#238636', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer' }}
-                      >Upload</button>
+                        style={{ fontSize: 11, padding: '2px 8px', background: '#1a2200', color: '#d4f53c', border: '1px solid rgba(212,245,60,0.2)', borderRadius: 4, cursor: 'pointer', fontFamily: "'Courier New', monospace" }}
+                      >upload</button>
                       <input
                         ref={fileInputRef}
                         type="file"
@@ -918,29 +916,29 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
                   {/* File list */}
                   <div style={{ overflow: 'auto', flex: 1 }}>
                     {fileEntries.length === 0 ? (
-                      <div style={{ fontSize: 11, color: '#8b949e', padding: '12px', textAlign: 'center' }}>Empty directory.</div>
+                      <div style={{ fontSize: 11, color: '#3a3a3a', padding: '12px', textAlign: 'center', fontFamily: "'Courier New', monospace" }}>Empty directory.</div>
                     ) : fileEntries.map(entry => (
                       <div
                         key={entry.path}
                         style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 10px', cursor: entry.is_dir ? 'pointer' : 'default' }}
-                        onMouseEnter={e => e.currentTarget.style.background = '#161b22'}
+                        onMouseEnter={e => e.currentTarget.style.background = '#1c1c1c'}
                         onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                         onClick={() => entry.is_dir && fetchFiles(entry.path)}
                       >
                         <span style={{ fontSize: 11 }}>{entry.is_dir ? '📁' : '📄'}</span>
-                        <span style={{ fontSize: 11, color: '#e6edf3', flex: 1, fontFamily: 'Consolas, monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entry.name}</span>
+                        <span style={{ fontSize: 11, color: '#888880', flex: 1, fontFamily: "'Courier New', monospace", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entry.name}</span>
                         {!entry.is_dir && (
                           <>
-                            <span style={{ fontSize: 10, color: '#8b949e', flexShrink: 0 }}>{fmtSize(entry.size)}</span>
+                            <span style={{ fontSize: 10, color: '#555550', flexShrink: 0, fontFamily: "'Courier New', monospace" }}>{fmtSize(entry.size)}</span>
                             <button
                               onClick={(e) => { e.stopPropagation(); downloadFile(entry.path); }}
-                              style={{ fontSize: 10, padding: '1px 6px', background: 'none', border: '1px solid #30363d', borderRadius: 3, color: '#8b949e', cursor: 'pointer', flexShrink: 0 }}
+                              style={{ fontSize: 10, padding: '1px 6px', background: 'none', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 3, color: '#555550', cursor: 'pointer', flexShrink: 0 }}
                             >↓</button>
                           </>
                         )}
                         <button
                           onClick={(e) => { e.stopPropagation(); deleteFile(entry.path).then(() => fetchFiles(filePath)).catch(() => {}); }}
-                          style={{ fontSize: 10, padding: '1px 6px', background: 'none', border: '1px solid #30363d', borderRadius: 3, color: '#8b949e', cursor: 'pointer', flexShrink: 0 }}
+                          style={{ fontSize: 10, padding: '1px 6px', background: 'none', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 3, color: '#555550', cursor: 'pointer', flexShrink: 0 }}
                         >×</button>
                       </div>
                     ))}
@@ -952,18 +950,18 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
             {/* Log modal */}
             {logModal && (
               <div
-                style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 onClick={() => setLogModal(null)}
               >
                 <div
-                  style={{ background: '#0d1117', border: '1px solid #30363d', borderRadius: 10, width: '70vw', maxHeight: '70vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+                  style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, width: '70vw', maxHeight: '70vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: '0 16px 48px rgba(0,0,0,0.6)' }}
                   onClick={e => e.stopPropagation()}
                 >
-                  <div style={{ padding: '8px 14px', borderBottom: '1px solid #30363d', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 11, color: '#8b949e', fontFamily: 'Consolas, monospace' }}>run log — {logModal.runId.slice(0, 8)}…</span>
-                    <button onClick={() => setLogModal(null)} style={{ background: 'none', border: 'none', color: '#8b949e', cursor: 'pointer', fontSize: 16 }}>×</button>
+                  <div style={{ padding: '8px 14px', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 11, color: '#555550', fontFamily: "'Courier New', monospace" }}>// run log — {logModal.runId.slice(0, 8)}…</span>
+                    <button onClick={() => setLogModal(null)} style={{ background: 'none', border: 'none', color: '#555550', cursor: 'pointer', fontSize: 16 }}>×</button>
                   </div>
-                  <pre ref={logScrollRef} style={{ fontSize: 10, lineHeight: 1.6, color: '#e6edf3', margin: 0, padding: '10px 14px', fontFamily: 'Consolas, monospace', overflow: 'auto', flex: 1, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                  <pre ref={logScrollRef} style={{ fontSize: 10, lineHeight: 1.6, color: '#8aaa18', margin: 0, padding: '10px 14px', fontFamily: "'Courier New', monospace", overflow: 'auto', flex: 1, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                     {logModal.content}
                   </pre>
                 </div>
