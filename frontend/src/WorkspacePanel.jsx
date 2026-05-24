@@ -191,6 +191,10 @@ const TYPE_CONFIG = {
   Agent: { class_name: '', task: '', prompt_template: '', max_steps: 20, llm: null },
   ForEach: { items_expr: '', loop_var: 'item', llm: null },
   Bootstrap: { packages: '' },
+  Remember: { key: '', value: '' },
+  Recall: { query: '', top_k: 5 },
+  Recover: { action: '', max_retries: 1 },
+  Plan: { task: '', options: ['option_a', 'option_b', 'option_c'] },
 };
 
 function createNode(type) {
