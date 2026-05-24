@@ -813,7 +813,7 @@ export default function WorkspacePanel({ onStart, onWorkflowEnd }) {
                 onOpenLog={setNodeLogModal}
               />
             </div>
-            <div style={{ flex: `0 0 ${bottomTab === 'files' ? 320 : 160}px`, margin: '0 8px 8px', background: '#0d1117', borderRadius: 10, border: '1px solid #30363d', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ flex: `0 0 ${bottomTab === 'files' || bottomTab === 'memory' ? 320 : 160}px`, margin: '0 8px 8px', background: '#0d1117', borderRadius: 10, border: '1px solid #30363d', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               {/* Tab bar */}
               <div style={{ padding: '0 8px', background: '#161b22', borderBottom: '1px solid #30363d', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0, minHeight: 30 }}>
                 {['preview', 'runs', 'files', 'memory'].map(tab => (
