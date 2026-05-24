@@ -83,6 +83,52 @@ RUN mkdir -p /root/.config/xfce4/xfconf/xfce-perchannel-xml && \
 </channel>
 EOF
 
+# Generate MnemOS dark dot-grid wallpaper
+RUN mkdir -p /usr/share/backgrounds/mnemos && \
+    python3 -c "
+from PIL import Image, ImageDraw
+w, h = 1920, 1080
+img = Image.new('RGB', (w, h), (15, 15, 15))
+draw = ImageDraw.Draw(img)
+for x in range(0, w, 24):
+    for y in range(0, h, 24):
+        draw.ellipse([x-1,y-1,x+1,y+1], fill=(42,42,40))
+img.save('/usr/share/backgrounds/mnemos/dark.png')
+"
+
+# Pre-seed xfce4-desktop config to use the dark wallpaper
+RUN cat > /root/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitorscreen" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="/usr/share/backgrounds/mnemos/dark.png"/>
+        </property>
+        <property name="workspace1" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="/usr/share/backgrounds/mnemos/dark.png"/>
+        </property>
+        <property name="workspace2" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="/usr/share/backgrounds/mnemos/dark.png"/>
+        </property>
+        <property name="workspace3" type="empty">
+          <property name="color-style" type="int" value="0"/>
+          <property name="image-style" type="int" value="5"/>
+          <property name="last-image" type="string" value="/usr/share/backgrounds/mnemos/dark.png"/>
+        </property>
+      </property>
+    </property>
+  </property>
+</channel>
+EOF
+
 RUN touch /root/.Xauthority
 RUN mkdir -p /root/Desktop /root/Downloads /root/Documents \
              /home/ubuntu/Desktop /home/ubuntu/Downloads /home/ubuntu/Documents \
