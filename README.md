@@ -1,50 +1,162 @@
-<img width="1213" height="441" alt="image" src="https://github.com/user-attachments/assets/e4bec6a9-3d1d-4878-b079-8a52f05a2489" />
+# MnemOS
 
-# <p align="center"> Orbit: Open Source AI Desktop Agent </p>
+> **An agentic OS that remembers, recovers, and adapts.**
 
-A self-hosted tool for building computer use workflows on a real desktop inside Docker.
-
-[![▶ Watch Demo](https://img.youtube.com/vi/R4SlZ8LntcU/maxresdefault.jpg)](https://youtu.be/R4SlZ8LntcU)
-
-▶ [Watch the demo](https://youtu.be/R4SlZ8LntcU)
-
-## What it does
-
-- Scrape structured data from websites
-- Fill and submit forms using credentials from a secrets vault
-- Run Python inline with access to all previous step outputs
-- Monitor pages on a schedule and branch based on what's on screen
-- Chain any of the above into a single workflow
-- Apply to Jobs
-
-Runs in a Docker container with a full browser and desktop. You can watch it work over VNC, pause and take control, then hand back.
-
-## Example workflows
-
-Built-in templates you can load in one click:
-
-| Template | What it does |
-|----------|-------------|
-| **Web Scrape** | Navigate to a page, extract structured fields |
-| **Login & Fill** | Log in with saved credentials, fill and submit a form |
-| **Retry Loop** | Run an action, check if it succeeded, retry if not |
-| **Competitor Analysis** | Scrape pricing, models, and API costs across a list of competitors, analyse in terminal, output CSV + charts |
-| **CSV Batch** | Load a CSV, loop over every row, perform an action per row |
-
-## Quick start
-
-```bash
-git clone https://github.com/aadya940/orbit-ui
-cd orbit-ui
-cp .env.example .env
-# Set GEMINI_API_KEY (or any supported LLM key)
-docker compose up
-```
-
-Open **http://127.0.0.1:3000**
-
-> **Windows:** use `127.0.0.1` not `localhost` — on Windows, `localhost` resolves to IPv6 and the connection will fail.
+Built for the **"Agents Under Pressure: Build Your Own OS"** hackathon.  
+Powered by [HydraDB](https://hydradb.com) · [Groq](https://groq.com) (Llama 3.3 70B) · Browser computer-use
 
 ---
 
-**Docs & more:** [orbit-cua.com](https://orbit-cua.com)
+## What is MnemOS?
+
+MnemOS is a **visual workflow builder for desktop AI agents** that runs in a fully containerized virtual desktop. Unlike standard agent frameworks, MnemOS agents don't start fresh each run — they carry memory across sessions, recover from failures automatically, and adapt their strategy based on what they've learned.
+
+It extends a browser-automation execution engine with four new primitives:
+
+| Primitive | What it does |
+|-----------|-------------|
+| **Remember node** | Stores observations, outcomes, and errors in HydraDB |
+| **Recall node** | Retrieves relevant memory via graph-enhanced hybrid search |
+| **Recover node** | Wraps any action in try/catch — queries memory for past failures, asks LLM for alternative approach |
+| **Plan node** | Reads memory context, asks LLM to choose the best next action from defined options |
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   MnemOS UI (React)                 │
+│   Graph Builder · Mission Control · Memory Panel    │
+└──────────────┬──────────────────────────────────────┘
+               │ REST + SSE
+┌──────────────▼──────────────────────────────────────┐
+│              FastAPI Backend (Python)               │
+│   Workflow CRUD · Codegen · Cron · File Manager     │
+└──────┬───────────────┬───────────────┬──────────────┘
+       │               │               │
+┌──────▼──────┐ ┌──────▼──────┐ ┌─────▼──────────────┐
+│  SQLite DB  │ │  HydraDB    │ │  Virtual Desktop    │
+│  workflows  │ │  Memory +   │ │  Chrome · Playwright│
+│  runs       │ │  Knowledge  │ │  noVNC · XFCE       │
+│  secrets    │ │  Graph      │ │                     │
+└─────────────┘ └─────────────┘ └────────────────────┘
+```
+
+**Execution flow:** Visual graph → JSON → Codegen (Python) → Execute in VM → SSE stream → UI
+
+---
+
+## Hackathon Track Coverage
+
+| Track | MnemOS implementation | Status |
+|-------|----------------------|--------|
+| **Memory** | HydraDB `remember` / `recall` nodes — graph-enhanced semantic retrieval across all runs | ✅ |
+| **Tools** | Browser (Playwright), HydraDB API, MCP server support, webhooks, cron, file system, code execution | ✅ |
+| **Recovery** | `Recover` node wraps any action — on failure: queries memory for past errors, LLM proposes alternative, retries | ✅ |
+| **Adaptation** | `Plan` node reads memory context, LLM selects strategy from defined options at runtime | ✅ |
+
+---
+
+## Quick Start
+
+```bash
+git clone https://github.com/yranjan06/MnemOS
+cd MnemOS
+cp .env.example .env
+```
+
+Edit `.env`:
+
+```env
+GROQ_API_KEY=gsk_...              # groq.com — free tier
+HYDRA_DB_API_KEY=hdb_...          # app.hydradb.com — free sandbox
+LITELLM_MODEL=groq/llama-3.3-70b-versatile
+```
+
+```bash
+docker compose up
+# Open http://localhost:3000
+```
+
+---
+
+## Demo Workflow
+
+`demos/price-monitor.json` — import via the UI.
+
+**What it demonstrates:**
+
+1. **Recall** — fetches price history from HydraDB before navigating
+2. **Navigate + Recover** — goes to product page; if extraction fails, LLM proposes alternative and retries
+3. **Plan** — reads memory context, decides: `alert_price_change` | `log_no_change` | `investigate_further`
+4. **Remember** — stores observation in HydraDB for next run
+
+Every run learns from the previous one.
+
+---
+
+## Node Types
+
+| Node | Track | Description |
+|------|-------|-------------|
+| `Do` | Tools | Freeform action on the visible page |
+| `Navigate` | Tools | Go to a URL |
+| `Read` | Tools | Extract structured data with schema |
+| `Fill` | Tools | Fill forms (supports `{{secrets.KEY}}`) |
+| `Check` | Tools | Conditional branching |
+| `Code` | Tools | Inline Python execution |
+| `Remember` | **Memory** | Store observation in HydraDB |
+| `Recall` | **Memory** | Retrieve from HydraDB (graph-enhanced) |
+| `Recover` | **Recovery** | Try/catch wrapper with LLM-guided retry |
+| `Plan` | **Adaptation** | Memory-informed LLM decision node |
+
+---
+
+## Why HydraDB?
+
+Vector databases return *similar* results. HydraDB returns *useful* ones — graph traversal over extracted entities + temporal versioning.
+
+For MnemOS: recovery agent sees all past failures for a node, not just similar text. Plan node gets coherent context threads, not isolated chunks. Memory persists across container restarts. No local embedding model to download or manage.
+
+---
+
+## LLM Configuration
+
+Default: **Groq (llama-3.3-70b-versatile)**. Switch in the UI LLM field or `.env`:
+
+```env
+# OpenAI
+LITELLM_MODEL=openai/gpt-4o-mini
+OPENAI_API_KEY=sk-...
+
+# Local
+LITELLM_MODEL=ollama/llama3.2
+OLLAMA_BASE_URL=http://localhost:11434
+```
+
+---
+
+## Project Structure
+
+```
+MnemOS/
+├── backend/
+│   ├── backend.py      # FastAPI — all endpoints
+│   ├── codegen.py      # Graph JSON → Python workflow
+│   ├── memory.py       # HydraDB integration
+│   ├── recovery.py     # Failure analysis + LLM retry
+│   └── state.py        # SSE pub-sub
+├── frontend/
+│   └── src/
+│       └── components/
+│           ├── MemoryPanel/     # Live memory viewer
+│           └── MissionControl/  # Memory + Runs dashboard
+├── demos/
+│   └── price-monitor.json
+└── docker-compose.yml
+```
+
+---
+
+*Built for "Agents Under Pressure: Build Your Own OS" · HydraDB community hackathon*
