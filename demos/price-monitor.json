@@ -9,7 +9,7 @@
   },
   "version": "1",
   "global": {
-    "llm": "groq/llama-3.3-70b-versatile",
+    "llm": "groq/llama-3.1-8b-instant",
     "human_in_the_loop": false
   },
   "nodes": [

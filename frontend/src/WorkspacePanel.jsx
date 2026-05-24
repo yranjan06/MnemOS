@@ -10,7 +10,7 @@ import MissionControl from './components/MissionControl/MissionControl';
 
 const DEFAULT_GRAPH = {
   version: '1',
-  global: { llm: 'groq/llama-3.3-70b-versatile', human_in_the_loop: false },
+  global: { llm: 'groq/llama-3.1-8b-instant', human_in_the_loop: false },
   nodes: [],
   edges: [],
 };
@@ -22,7 +22,7 @@ const TEMPLATES = [
     desc: 'Navigate to a page, extract structured data',
     graph: {
       version: '1',
-      global: { llm: 'groq/llama-3.3-70b-versatile', human_in_the_loop: false },
+      global: { llm: 'groq/llama-3.1-8b-instant', human_in_the_loop: false },
       nodes: [
         { id: 'n1', type: 'Navigate', label: 'Open page', position: { x: 180, y: 60 }, config: { target: 'https://example.com', max_steps: null, extra_info: '', llm: null } },
         { id: 'n2', type: 'Read', label: 'Extract data', position: { x: 180, y: 200 }, config: { task: 'Extract the main heading and description', max_steps: null, llm: null },
@@ -39,7 +39,7 @@ const TEMPLATES = [
     desc: 'Log into a site and submit a form',
     graph: {
       version: '1',
-      global: { llm: 'groq/llama-3.3-70b-versatile', human_in_the_loop: false },
+      global: { llm: 'groq/llama-3.1-8b-instant', human_in_the_loop: false },
       nodes: [
         { id: 'n1', type: 'Navigate', label: 'Open login page', position: { x: 180, y: 60 }, config: { target: 'https://example.com/login', max_steps: null, extra_info: '', llm: null } },
         { id: 'n2', type: 'Fill', label: 'Fill login form', position: { x: 180, y: 200 }, config: { target: 'login form', data: { email: '{{secrets.EMAIL}}', password: '{{secrets.PASSWORD}}' }, llm: null } },
@@ -59,7 +59,7 @@ const TEMPLATES = [
     desc: 'Repeat an action until a condition passes',
     graph: {
       version: '1',
-      global: { llm: 'groq/llama-3.3-70b-versatile', human_in_the_loop: false },
+      global: { llm: 'groq/llama-3.1-8b-instant', human_in_the_loop: false },
       nodes: [
         { id: 'n1', type: 'Navigate', label: 'Open page',      position: { x: 180, y: 60  }, config: { target: 'https://example.com', max_steps: null, extra_info: '', llm: null } },
         { id: 'n2', type: 'Check',    label: 'Succeeded?',     position: { x: 180, y: 200 }, config: { condition: 'The action completed successfully and the expected result is visible', max_steps: null, llm: null } },
@@ -78,7 +78,7 @@ const TEMPLATES = [
     desc: 'Scrape pricing & models from multiple AI platforms, then analyse in ipython',
     graph: {
       version: '1',
-      global: { llm: 'groq/llama-3.3-70b-versatile', human_in_the_loop: false },
+      global: { llm: 'groq/llama-3.1-8b-instant', human_in_the_loop: false },
       nodes: [
         {
           id: 'n1', type: 'Code', label: 'Setup', position: { x: 180, y: 60 },
@@ -165,7 +165,7 @@ const TEMPLATES = [
     desc: 'Load a CSV and process each row',
     graph: {
       version: '1',
-      global: { llm: 'groq/llama-3.3-70b-versatile', human_in_the_loop: false },
+      global: { llm: 'groq/llama-3.1-8b-instant', human_in_the_loop: false },
       nodes: [
         { id: 'n1', type: 'Code',    label: 'Load CSV',      position: { x: 180, y: 60  }, config: { code: "import csv\nwith open('/workspace/uploads/data.csv') as f:\n    rows = list(csv.DictReader(f))", llm: null } },
         { id: 'n2', type: 'ForEach', label: 'For each row',  position: { x: 180, y: 200 }, config: { items_expr: 'rows', loop_var: 'row', llm: null } },
