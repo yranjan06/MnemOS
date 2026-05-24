@@ -202,7 +202,7 @@ async def workflow_create(payload: dict = {}):
     empty = json.dumps(
         {
             "version": "1",
-            "global": {"llm": "groq/llama-3.3-70b-versatile", "human_in_the_loop": False},
+            "global": {"llm": "groq/llama-3.1-8b-instant", "human_in_the_loop": False},
             "nodes": [],
             "edges": [],
         }
