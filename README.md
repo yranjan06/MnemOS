@@ -3,7 +3,7 @@
 > **An agentic OS that remembers, recovers, and adapts.**
 
 Built for the **"Agents Under Pressure: Build Your Own OS"** hackathon.  
-Powered by [HydraDB](https://hydradb.com) · [Groq](https://groq.com) (Llama 3.3 70B) · Browser computer-use
+Powered by [HydraDB](https://hydradb.com) · [Groq](https://groq.com) (Llama 3.1 8B Instant) · Browser computer-use
 
 ---
 
@@ -71,7 +71,7 @@ Edit `.env` with real keys:
 ```env
 GROQ_API_KEY=gsk_...              # console.groq.com → API Keys (free tier)
 HYDRA_DB_API_KEY=sk_live_...      # app.hydradb.com → Settings → API Keys (free sandbox)
-LITELLM_MODEL=groq/llama-3.3-70b-versatile
+LITELLM_MODEL=groq/llama-3.1-8b-instant
 ```
 
 ```bash
@@ -88,7 +88,7 @@ docker compose up --build
 | `http://localhost:8000/docs` | FastAPI Swagger |
 | `http://localhost:6080` | Virtual desktop (noVNC) |
 
-> **Note:** The HydraDB API key format is `sk_live_...` (not `hdb_...`). Both formats are accepted.
+> **Note:** The HydraDB API key format is `sk_live_...`. The default model is `groq/llama-3.1-8b-instant` — switch to a model with higher context limits (e.g. `openai/gpt-4o-mini`) for complex browser automation workflows.
 
 ---
 
@@ -134,17 +134,26 @@ For MnemOS: recovery agent sees all past failures for a node, not just similar t
 
 ## LLM Configuration
 
-Default: **Groq (llama-3.3-70b-versatile)**. Switch in the UI LLM field or `.env`:
+Default: **Groq `llama-3.1-8b-instant`**. Switch in the UI LLM field or `.env`:
 
 ```env
-# OpenAI
+# Groq — higher capacity model (requires Dev tier for large pages)
+LITELLM_MODEL=groq/llama-3.3-70b-versatile
+
+# OpenAI — recommended for browser automation (large page context)
 LITELLM_MODEL=openai/gpt-4o-mini
 OPENAI_API_KEY=sk-...
+
+# Anthropic
+LITELLM_MODEL=anthropic/claude-haiku-4-5-20251001
+ANTHROPIC_API_KEY=sk-ant-...
 
 # Local
 LITELLM_MODEL=ollama/llama3.2
 OLLAMA_BASE_URL=http://localhost:11434
 ```
+
+> **Groq free-tier note:** Browser automation nodes (Navigate/Do/Read) send full page context to the LLM (~6–25K tokens per step). Groq free tier caps individual requests at 6K–12K tokens depending on the model. For browser-heavy workflows, use OpenAI, Anthropic, or upgrade to [Groq Dev tier](https://console.groq.com/settings/billing). Memory-only workflows (Remember/Recall/Plan without browser nodes) work fine on the free tier.
 
 ---
 
