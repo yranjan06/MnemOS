@@ -71,6 +71,11 @@ class Node:
         "Agent",
         "ForEach",
         "Bootstrap",
+        # MnemOS memory + intelligence nodes
+        "Remember",
+        "Recall",
+        "Recover",
+        "Plan",
     }
 
 
@@ -565,6 +570,80 @@ def _emit_node(
         lines.append(f"{pad}if hasattr(_{node.id}_result, 'summary') and _{node.id}_result.summary:")
         lines.append(f"{pad}    report_node_log({node.id!r}, str(_{node.id}_result.summary))")
         lines.append(f'{pad}_current_log_node[0] = None')
+        lines.append(f'{pad}report_node("{node.id}", "success")')
+        return lines
+
+    # ── MnemOS memory nodes ─────────────────────────────────────────────────
+
+    if node.type == "Remember":
+        key = node.config.get("key", "observation")
+        value_template = node.config.get("value", "")
+        value_expr = _resolve_all(value_template, nodes_by_id, edges_by_source) if value_template else "''"
+        lines.append(f'{pad}report_node("{node.id}", "running")')
+        lines.append(f'{pad}print("--- {node.id}: {node.label} ---")')
+        lines.append(f"{pad}from memory import remember as _mnemos_remember")
+        lines.append(f"{pad}await _mnemos_remember(")
+        lines.append(f"{pad}    key={key!r},")
+        lines.append(f"{pad}    value=str({value_expr}),")
+        lines.append(f"{pad}    workflow_id=_workflow_id,")
+        lines.append(f"{pad}    run_id=_run_id,")
+        lines.append(f"{pad})")
+        lines.append(f'{pad}{node.id}_out = type("_Out", (), {{"status": "remembered", "key": {key!r}}})()')
+        lines.append(f'{pad}report_node_output({node.id!r}, {{"status": "remembered", "key": {key!r}}})')
+        lines.append(f'{pad}report_node("{node.id}", "success")')
+        return lines
+
+    if node.type == "Recall":
+        query_template = node.config.get("query", "")
+        query_expr = _resolve_all(query_template, nodes_by_id, edges_by_source) if query_template else "''"
+        top_k = int(node.config.get("top_k", 5))
+        lines.append(f'{pad}report_node("{node.id}", "running")')
+        lines.append(f'{pad}print("--- {node.id}: {node.label} ---")')
+        lines.append(f"{pad}from memory import recall as _mnemos_recall")
+        lines.append(f"{pad}_{node.id}_memories = await _mnemos_recall(")
+        lines.append(f"{pad}    query=str({query_expr}),")
+        lines.append(f"{pad}    workflow_id=_workflow_id,")
+        lines.append(f"{pad}    top_k={top_k},")
+        lines.append(f"{pad}    run_id=_run_id,")
+        lines.append(f"{pad})")
+        lines.append(f"{pad}_{node.id}_ctx = '\\n'.join(")
+        lines.append(f"{pad}    f\"[{{m.get('key', '')}}]: {{m.get('value', m.get('text', str(m)))}}\"")
+        lines.append(f"{pad}    for m in _{node.id}_memories")
+        lines.append(f"{pad})")
+        lines.append(f'{pad}{node.id}_out = type("_Out", (), {{"memories": _{node.id}_memories, "context": _{node.id}_ctx}})()')
+        lines.append(f'{pad}report_node_output({node.id!r}, {{"count": len(_{node.id}_memories), "context": _{node.id}_ctx[:200]}})')
+        lines.append(f'{pad}report_node("{node.id}", "success")')
+        return lines
+
+    if node.type == "Plan":
+        task_template = node.config.get("task", "")
+        task_expr = _resolve_all(task_template, nodes_by_id, edges_by_source) if task_template else "''"
+        options = node.config.get("options", [])
+        lines.append(f'{pad}report_node("{node.id}", "running")')
+        lines.append(f'{pad}print("--- {node.id}: {node.label} ---")')
+        lines.append(f"{pad}import os as _os_{node.id}; import json as _json_{node.id}")
+        lines.append(f"{pad}from memory import recall as _plan_recall")
+        lines.append(f"{pad}from litellm import acompletion as _plan_llm")
+        lines.append(f"{pad}_{node.id}_past = await _plan_recall(str({task_expr}), _workflow_id, top_k=3)")
+        lines.append(f"{pad}_{node.id}_past_ctx = '\\n'.join(m.get('value', '') for m in _{node.id}_past) or 'No history.'")
+        lines.append(f"{pad}_{node.id}_opts = {repr(options)}")
+        lines.append(f"{pad}_{node.id}_prompt = (")
+        lines.append(f"{pad}    f\"Task: {{str({task_expr})}}\\n\"")
+        lines.append(f"{pad}    f\"Past outcomes:\\n{{_{node.id}_past_ctx}}\\n\"")
+        lines.append(f"{pad}    f\"Choose the best next action from: {{_{node.id}_opts}}\\n\"")
+        lines.append(f'{pad}    "Respond with JSON: ' + r'{"action": "<chosen option>", "reason": "<why>"}' + '"')
+        lines.append(f"{pad})")
+        lines.append(f"{pad}_{node.id}_resp = await _plan_llm(model=model, messages=[")
+        lines.append(f'{pad}    {{"role": "system", "content": "You are a planning agent. Respond only with JSON."}},')
+        lines.append(f'{pad}    {{"role": "user", "content": _{node.id}_prompt}},')
+        lines.append(f"{pad}], max_tokens=256)")
+        lines.append(f"{pad}_{node.id}_raw = _{node.id}_resp.choices[0].message.content or '{{}}'")
+        lines.append(f"{pad}import re as _re_{node.id}")
+        lines.append(f"{pad}_{node.id}_clean = _re_{node.id}.sub(r'```json|```', '', _{node.id}_raw).strip()")
+        lines.append(f"{pad}try: _{node.id}_plan = _json_{node.id}.loads(_{node.id}_clean)")
+        lines.append(f"{pad}except: _{node.id}_plan = {{'action': str(_{node.id}_opts[0] if _{node.id}_opts else ''), 'reason': 'parse failed'}}")
+        lines.append(f'{pad}{node.id}_out = type("_Out", (), _{node.id}_plan)()')
+        lines.append(f'{pad}report_node_output({node.id!r}, _{node.id}_plan)')
         lines.append(f'{pad}report_node("{node.id}", "success")')
         return lines
 
@@ -1175,7 +1254,13 @@ def _emit_subgraph(
 # ── Main generation ──────────────────────────────────────────────────────────
 
 
-def generate(graph_data: dict, log_file_path: str | None = None, inputs: dict | None = None) -> str:
+def generate(
+    graph_data: dict,
+    log_file_path: str | None = None,
+    inputs: dict | None = None,
+    workflow_id: str | None = None,
+    run_id: str | None = None,
+) -> str:
     """Generate workflow.py source code from graph JSON."""
     global_cfg, nodes, edges = parse_graph(graph_data)
     nodes_by_id = {n.id: n for n in nodes}
@@ -1330,6 +1415,8 @@ def generate(graph_data: dict, log_file_path: str | None = None, inputs: dict | 
         lines.append("from orbit import Bootstrap")
     lines.append("from state import pause_event, report_node, report_node_output, report_node_log")
     lines.append(f"_inputs = {repr(inputs or {})}")
+    lines.append(f"_workflow_id = {repr(workflow_id or '')}")
+    lines.append(f"_run_id = {repr(run_id or 'global')}")
     lines.append("")
     if log_file_path:
         lines.append(f"_LOG_FILE = {log_file_path!r}")

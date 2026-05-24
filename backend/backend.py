@@ -32,6 +32,7 @@ if not os.environ.get("DBUS_SESSION_BUS_ADDRESS"):
 import state as _state
 from state import pause_event
 from codegen import generate, CodegenError
+import memory as _memory
 
 FILES_ROOT = Path("/workspace")
 WORKFLOW_JSON = Path("/workspace/workflow.json")  # legacy migration source
@@ -372,7 +373,13 @@ async def _run_workflow(workflow_id: str, inputs: dict | None = None) -> dict:
 
     try:
         graph_data = json.loads(row["graph"])
-        code = generate(graph_data, log_file_path=log_path, inputs=inputs or {})
+        code = generate(
+            graph_data,
+            log_file_path=log_path,
+            inputs=inputs or {},
+            workflow_id=wid,
+            run_id=run_id,
+        )
         WORKFLOW_PY.write_text(code)
     except Exception as e:
         return {"status": "error", "message": f"Code generation failed: {e}"}
@@ -679,6 +686,42 @@ async def delete_file(path: str):
         target.rmdir()  # only empty dirs — prevents accidental data loss
     else:
         target.unlink()
+    return {"status": "deleted"}
+
+
+# ── Memory endpoints ────────────────────────────────────────────────────────
+
+
+@app.get("/memory")
+async def memory_list(workflow_id: str):
+    return {"memories": await _memory.get_all(workflow_id)}
+
+
+@app.post("/memory/remember")
+async def memory_remember(payload: dict):
+    await _memory.remember(
+        key=payload["key"],
+        value=payload["value"],
+        workflow_id=payload["workflow_id"],
+        run_id=payload.get("run_id", "global"),
+    )
+    return {"status": "ok"}
+
+
+@app.post("/memory/recall")
+async def memory_recall(payload: dict):
+    results = await _memory.recall(
+        query=payload["query"],
+        workflow_id=payload["workflow_id"],
+        top_k=payload.get("top_k", 5),
+        run_id=payload.get("run_id", "global"),
+    )
+    return {"results": results}
+
+
+@app.delete("/memory/{workflow_id}/{key}")
+async def memory_forget(workflow_id: str, key: str):
+    await _memory.forget(key, workflow_id)
     return {"status": "deleted"}
 
 
