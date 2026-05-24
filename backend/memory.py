@@ -1,11 +1,11 @@
 """MnemOS memory layer — backed by HydraDB.
 
-Tenant model:
-  tenant_id    = workflow_id  (one isolated memory space per workflow)
-  sub_tenant_id = run_id | "global"  (per-run scoping within a workflow)
+Tenant model (single shared tenant):
+  tenant_id     = "mnemos"      (one tenant for the whole instance)
+  sub_tenant_id = workflow_id   (per-workflow memory scoping)
 
-Memories  — dynamic observations, errors, outcomes stored per run
-Knowledge — static documents (site maps, domain docs) stored per workflow
+Using a single tenant avoids HydraDB free-tier per-tenant limits and
+eliminates provisioning delays on first run of a new workflow.
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ import os
 from typing import Any
 
 _client = None
+_TENANT = "mnemos"
 
 
 def _get_client():
@@ -30,20 +31,21 @@ def _get_client():
     return _client
 
 
-async def ensure_tenant(workflow_id: str) -> None:
-    """Create HydraDB tenant for this workflow (idempotent — ignores 409)."""
+async def ensure_tenant(tenant_id: str = _TENANT) -> None:
+    """Create HydraDB tenant (idempotent — ignores 409). Waits up to 150s."""
     client = _get_client()
     try:
-        await client.tenant.create(tenant_id=workflow_id)
+        await client.tenant.create(tenant_id=tenant_id)
     except Exception:
         pass  # already exists — that's fine
-    # wait for vectorstore to be provisioned (up to 90s)
-    for _ in range(18):
+    # wait for vectorstore to be provisioned (up to 150s)
+    for _ in range(30):
         try:
-            status = await client.tenant.get_infra_status(tenant_id=workflow_id)
+            status = await client.tenant.get_infra_status(tenant_id=tenant_id)
             vs = status.get("vectorstore_status", "")
             gr = status.get("graph_status", "")
-            if str(vs).lower() in ("active", "ready", "true", "1") and str(gr).lower() in ("active", "ready", "true", "1"):
+            if (str(vs).lower() in ("active", "ready", "true", "1") and
+                    str(gr).lower() in ("active", "ready", "true", "1")):
                 return
         except Exception:
             pass
@@ -58,12 +60,12 @@ async def remember(
 ) -> None:
     """Store a memory entry scoped to a workflow."""
     client = _get_client()
-    await ensure_tenant(workflow_id)
+    await ensure_tenant(_TENANT)
     for attempt in range(3):
         try:
             await client.upload.add_memory(
-                tenant_id=workflow_id,
-                sub_tenant_id=run_id,
+                tenant_id=_TENANT,
+                sub_tenant_id=workflow_id,
                 memories=[
                     {
                         "text": f"[{key}]: {value}",
@@ -74,7 +76,7 @@ async def remember(
             return
         except Exception as e:
             if "TENANT_NOT_FOUND" in str(e) and attempt < 2:
-                await ensure_tenant(workflow_id)
+                await ensure_tenant(_TENANT)
                 await asyncio.sleep(5)
             else:
                 raise
@@ -86,12 +88,12 @@ async def recall(
     top_k: int = 5,
     run_id: str = "global",
 ) -> list[dict]:
-    """Semantic + graph recall of relevant memories."""
+    """Semantic + graph recall scoped to this workflow."""
     client = _get_client()
     try:
         result = await client.recall.recall_preferences(
-            tenant_id=workflow_id,
-            sub_tenant_id=run_id,
+            tenant_id=_TENANT,
+            sub_tenant_id=workflow_id,
             query=query,
             mode="fast",
             max_results=top_k,
@@ -108,12 +110,12 @@ async def recall_all_runs(
     workflow_id: str,
     top_k: int = 5,
 ) -> list[dict]:
-    """Recall across all runs via the global sub-tenant."""
+    """Recall across all runs for this workflow."""
     client = _get_client()
     try:
         result = await client.recall.recall_preferences(
-            tenant_id=workflow_id,
-            sub_tenant_id="global",
+            tenant_id=_TENANT,
+            sub_tenant_id=workflow_id,
             query=query,
             mode="fast",
             max_results=top_k,
@@ -141,7 +143,7 @@ async def forget(key: str, workflow_id: str) -> None:
     client = _get_client()
     try:
         await client.upload.delete_knowledge(
-            tenant_id=workflow_id,
+            tenant_id=_TENANT,
             source_ids=[key],
         )
     except Exception:
@@ -153,8 +155,8 @@ async def get_all(workflow_id: str, limit: int = 50) -> list[dict]:
     client = _get_client()
     try:
         result = await client.recall.recall_preferences(
-            tenant_id=workflow_id,
-            sub_tenant_id="global",
+            tenant_id=_TENANT,
+            sub_tenant_id=workflow_id,
             query="all observations outcomes errors",
             mode="fast",
             max_results=limit,

@@ -68,6 +68,7 @@ export default function MonacoModal({ open, title, value, language = 'plaintext'
             value={value}
             onChange={(v) => onChange(v ?? '')}
             theme="vs-dark"
+            onMount={(editor) => { setTimeout(() => editor.focus(), 50); }}
             options={{
               minimap: { enabled: false },
               lineNumbers: isCode ? 'on' : 'off',
