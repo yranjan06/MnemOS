@@ -136,6 +136,10 @@ const TYPE_COLORS = {
   Code: "#6b7280",
   Agent: "#7c3aed",
   Bootstrap: "#b45309",
+  Remember: "#6d28d9",
+  Recall: "#6d28d9",
+  Recover: "#dc2626",
+  Plan: "#0369a1",
 };
 
 const divider = { border: 'none', borderTop: '1px solid #f0f0f0', margin: '10px 0 6px' };
@@ -283,7 +287,7 @@ export default function NodeConfigPanel({ node, onUpdate, onClose, onDelete }) {
   }
 
   const showSchema = nodeType === "Read" || nodeType === "Do" || nodeType === "Agent";
-  const showMaxSteps = nodeType !== "Code" && nodeType !== "ForEach" && nodeType !== "Bootstrap";
+  const showMaxSteps = nodeType !== "Code" && nodeType !== "ForEach" && nodeType !== "Bootstrap" && nodeType !== "Remember" && nodeType !== "Recall" && nodeType !== "Recover" && nodeType !== "Plan";
   const showExtraInfo = nodeType === "Do" || nodeType === "Navigate";
 
   return (
@@ -444,6 +448,90 @@ export default function NodeConfigPanel({ node, onUpdate, onClose, onDelete }) {
           />
           <span style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>One package per line (or comma-separated). Runs apt-get install before the workflow starts.</span>
         </div>
+      )}
+
+      {nodeType === "Remember" && (
+        <>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Key</label>
+            <input style={styles.input} value={config.key || ""} onChange={(e) => updateConfig("key", e.target.value)} placeholder="e.g. product_price" />
+            <span style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>Label for this memory entry in HydraDB.</span>
+          </div>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Value</label>
+            <PromptInput
+              label="Value"
+              value={config.value || ""}
+              onChange={(v) => updateConfig("value", v)}
+              placeholder={"What to store. Use {{node_id_out.field}} to pipe from a previous node."}
+              minHeight={60}
+            />
+          </div>
+        </>
+      )}
+
+      {nodeType === "Recall" && (
+        <>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Query</label>
+            <PromptInput
+              label="Query"
+              value={config.query || ""}
+              onChange={(v) => updateConfig("query", v)}
+              placeholder={"Natural language search — e.g. 'product price observation'"}
+              minHeight={50}
+            />
+          </div>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Top K results</label>
+            <input style={styles.numberInput} type="number" min={1} max={20} value={config.top_k ?? 5} onChange={(e) => updateConfig("top_k", parseInt(e.target.value) || 5)} />
+          </div>
+        </>
+      )}
+
+      {nodeType === "Recover" && (
+        <>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Action</label>
+            <PromptInput
+              label="Action"
+              value={config.action || ""}
+              onChange={(v) => updateConfig("action", v)}
+              placeholder={"What the agent should try to do — e.g. 'Find and extract the book price on the page'"}
+              minHeight={60}
+            />
+            <span style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>On failure, LLM queries memory for past errors and proposes an alternative approach, then retries.</span>
+          </div>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Max retries</label>
+            <input style={styles.numberInput} type="number" min={1} max={5} value={config.max_retries ?? 1} onChange={(e) => updateConfig("max_retries", parseInt(e.target.value) || 1)} />
+          </div>
+        </>
+      )}
+
+      {nodeType === "Plan" && (
+        <>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Task</label>
+            <PromptInput
+              label="Task"
+              value={config.task || ""}
+              onChange={(v) => updateConfig("task", v)}
+              placeholder={"Based on memory context, decide what to do next"}
+              minHeight={60}
+            />
+          </div>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Options (one per line)</label>
+            <textarea
+              style={styles.textarea}
+              value={Array.isArray(config.options) ? config.options.join('\n') : (config.options || '')}
+              onChange={(e) => updateConfig("options", e.target.value.split('\n').map(s => s.trim()).filter(Boolean))}
+              placeholder={"alert_price_change\nlog_no_change\ninvestigate_further"}
+            />
+            <span style={{ fontSize: 10, color: '#aaa', marginTop: 2 }}>LLM picks one option based on memory context. Use snake_case.</span>
+          </div>
+        </>
       )}
 
       {(showMaxSteps || showExtraInfo) && (

@@ -35,14 +35,19 @@ async def ensure_tenant(workflow_id: str) -> None:
     client = _get_client()
     try:
         await client.tenant.create(tenant_id=workflow_id)
-        # wait briefly for infra to provision
-        for _ in range(12):
-            status = await client.tenant.get_infra_status(tenant_id=workflow_id)
-            if status.get("graph_status") and status.get("vectorstore_status"):
-                break
-            await asyncio.sleep(5)
     except Exception:
-        pass  # already exists or provisioning failed silently
+        pass  # already exists — that's fine
+    # wait for vectorstore to be provisioned (up to 90s)
+    for _ in range(18):
+        try:
+            status = await client.tenant.get_infra_status(tenant_id=workflow_id)
+            vs = status.get("vectorstore_status", "")
+            gr = status.get("graph_status", "")
+            if str(vs).lower() in ("active", "ready", "true", "1") and str(gr).lower() in ("active", "ready", "true", "1"):
+                return
+        except Exception:
+            pass
+        await asyncio.sleep(5)
 
 
 async def remember(
@@ -54,16 +59,25 @@ async def remember(
     """Store a memory entry scoped to a workflow."""
     client = _get_client()
     await ensure_tenant(workflow_id)
-    await client.upload.add_memory(
-        tenant_id=workflow_id,
-        sub_tenant_id=run_id,
-        memories=[
-            {
-                "text": f"[{key}]: {value}",
-                "infer": True,
-            }
-        ],
-    )
+    for attempt in range(3):
+        try:
+            await client.upload.add_memory(
+                tenant_id=workflow_id,
+                sub_tenant_id=run_id,
+                memories=[
+                    {
+                        "text": f"[{key}]: {value}",
+                        "infer": True,
+                    }
+                ],
+            )
+            return
+        except Exception as e:
+            if "TENANT_NOT_FOUND" in str(e) and attempt < 2:
+                await ensure_tenant(workflow_id)
+                await asyncio.sleep(5)
+            else:
+                raise
 
 
 async def recall(
@@ -94,16 +108,27 @@ async def recall_all_runs(
     workflow_id: str,
     top_k: int = 5,
 ) -> list[dict]:
-    """Recall across all runs (for recovery agent — needs cross-run context)."""
+    """Recall across all runs via the global sub-tenant."""
     client = _get_client()
     try:
-        result = await client.recall.full_recall(
+        result = await client.recall.recall_preferences(
             tenant_id=workflow_id,
+            sub_tenant_id="global",
             query=query,
-            max_results=top_k,
             mode="fast",
-            graph_context=True,
+            max_results=top_k,
         )
+        chunks = getattr(result, "chunks", None)
+        if chunks is not None:
+            return [
+                {
+                    "key": c.source_id or "",
+                    "value": c.chunk_content or "",
+                    "text": c.chunk_content or "",
+                    "score": c.relevancy_score or 0,
+                }
+                for c in chunks
+            ]
         if isinstance(result, list):
             return result
         return result.get("results", []) if isinstance(result, dict) else []

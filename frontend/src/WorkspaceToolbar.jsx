@@ -8,10 +8,15 @@ const ADD_NODES = [
   ['Agent', '#7c3aed'],
   ['ForEach', '#f59e0b'],
   ['Bootstrap', '#b45309'],
+  ['Remember', '#6d28d9'],
+  ['Recall', '#6d28d9'],
+  ['Recover', '#dc2626'],
+  ['Plan', '#0369a1'],
 ];
 
 const TYPE_ICONS = {
   Navigate: '→', Do: '⚡', Check: '✓', Fill: '≡', Read: '»', Code: '</>', Agent: '◈', ForEach: '∀', Bootstrap: '↓',
+  Remember: '🧠', Recall: '⟳', Recover: '⚕', Plan: '⊞',
 };
 
 export default function WorkspaceToolbar({ onAddNode, onSave, onGenerate, onPreview, onStart, status, disabled, running }) {
