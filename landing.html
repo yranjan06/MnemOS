@@ -2,484 +2,533 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MnemOS — Visual Workflow Builder with AI Memory</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MnemOS</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0f0f0f;font-family:'Courier New',monospace;color:#f0f0ee;overflow-x:hidden}
-.nav{height:52px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:#0f0f0f;position:sticky;top:0;z-index:10}
-.nav-logo{display:flex;align-items:center;gap:10px}
-.nav-wordmark{font-size:14px;font-weight:700;color:#f0f0ee;letter-spacing:-.01em}
-.nav-right{display:flex;align-items:center;gap:10px}
-.nav-pill{font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.1em;text-transform:uppercase;background:#0a1a2e;color:#6ec6f5;border:1px solid rgba(110,198,245,.2)}
-.nav-btn{font-size:11px;font-weight:700;padding:7px 16px;border-radius:30px;background:#d4f53c;color:#0f0f0f;border:none;cursor:pointer;font-family:'Courier New',monospace;letter-spacing:.02em}
-.hero{text-align:center;padding:56px 28px 48px;position:relative}
-.hero-anim{display:flex;justify-content:center;margin-bottom:32px}
-.hero-title-wrap{display:flex;justify-content:center;margin-bottom:24px}
-.hero-sub{font-size:13px;color:#888880;line-height:1.85;margin-bottom:32px;max-width:460px;margin-left:auto;margin-right:auto}
-.hero-sub strong{color:#d4f53c;font-weight:700}
-.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:56px}
-.btn-fill{font-size:12px;font-weight:700;padding:12px 28px;border-radius:30px;background:#d4f53c;color:#0f0f0f;border:none;cursor:pointer;font-family:'Courier New',monospace;letter-spacing:.02em;transition:opacity .15s}
-.btn-fill:hover{opacity:.85}
-.btn-ghost{font-size:12px;font-weight:700;padding:12px 28px;border-radius:30px;background:transparent;color:#f0f0ee;border:1.5px solid rgba(255,255,255,0.15);cursor:pointer;font-family:'Courier New',monospace;letter-spacing:.02em;transition:border-color .15s}
-.btn-ghost:hover{border-color:rgba(255,255,255,.35)}
-.badge-row{display:flex;gap:8px;justify-content:center;margin-bottom:20px}
-.badge{font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.1em;text-transform:uppercase}
-.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06)}
-.stat{padding:28px 20px;text-align:center;border-right:1px solid rgba(255,255,255,0.06)}
-.stat:last-child{border-right:none}
-.stat-n{font-size:36px;font-weight:700;color:#d4f53c;letter-spacing:-.02em;line-height:1}
-.stat-l{font-size:9px;color:#555550;letter-spacing:.1em;text-transform:uppercase;margin-top:6px}
-.sec{padding:56px 28px}
-.sec-lbl{font-size:9px;color:#555550;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px}
-.sec-lbl span{color:#d4f53c}
-.sec-h{font-size:22px;font-weight:700;color:#f0f0ee;letter-spacing:-.02em;line-height:1.2;margin-bottom:12px}
-.feat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:32px}
-.feat-card{background:#1c1c1c;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:22px;transition:border-color .2s}
-.feat-card:hover{border-color:rgba(212,245,60,.2)}
-.feat-icon{width:36px;height:36px;border-radius:8px;background:#1a2200;border:1px solid rgba(212,245,60,.15);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:16px}
-.feat-title{font-size:13px;font-weight:700;color:#f0f0ee;margin-bottom:8px}
-.feat-body{font-size:11px;color:#555550;line-height:1.8}
-.feat-body strong{color:#888880;font-weight:400}
-.mem-sec{background:#080810;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);padding:48px 28px}
-.mem-inner{display:flex;gap:40px;align-items:center;flex-wrap:wrap}
-.mem-left{flex:1;min-width:240px}
-.mem-right{flex:1;min-width:240px}
-.mem-card{background:#0f0f0f;border:1px solid rgba(212,245,60,.12);border-radius:14px;padding:18px}
-.mem-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:11px;color:#555550}
-.mem-row:last-child{border-bottom:none}
-.mem-row strong{color:#888880;font-weight:400}
-.mem-dot{width:6px;height:6px;border-radius:50%;background:#d4f53c;flex-shrink:0}
-.mem-dot-blue{width:6px;height:6px;border-radius:50%;background:#6ec6f5;flex-shrink:0}
-.mem-dot-dim{background:#2e2e2e}
-.stack-sec{padding:48px 28px;border-bottom:1px solid rgba(255,255,255,0.06)}
-.scroll-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
-.s-tag{font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;letter-spacing:.03em;font-family:'Courier New',monospace}
-.s-tag-lime{background:#1a2200;color:#8aaa18;border:1px solid rgba(212,245,60,.15)}
-.s-tag-blue{background:#0a1a2e;color:#4a9ab5;border:1px solid rgba(110,198,245,.1)}
-.s-tag-dim{background:#1c1c1c;color:#3a3a3a;border:1px solid rgba(255,255,255,0.05)}
-.how-sec{padding:48px 28px;border-bottom:1px solid rgba(255,255,255,0.06)}
-.step-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-top:28px}
-.step{background:#1c1c1c;border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.07)}
-.step-num{font-size:24px;font-weight:700;color:#2e2e2e;margin-bottom:10px}
-.step-title{font-size:11px;font-weight:700;color:#f0f0ee;margin-bottom:6px}
-.step-body{font-size:10px;color:#555550;line-height:1.7}
-.node-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
-.node-chip{font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:.04em;font-family:'Courier New',monospace}
-.footer{padding:32px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border-top:1px solid rgba(255,255,255,0.06)}
-.footer-logo{display:flex;align-items:center;gap:8px}
-.footer-wordmark{font-size:13px;font-weight:700;color:#555550}
-.footer-links{display:flex;gap:20px}
-.footer-link{font-size:10px;color:#3a3a3a;letter-spacing:.06em;cursor:pointer;text-transform:uppercase}
-.footer-link:hover{color:#888880}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #000;
+    font-family: 'Courier New', Courier, monospace;
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  /* ── max-width wrapper ── */
+  .wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: #000;
+  }
+
+  .nav-inner {
+    width: 100%;
+    max-width: 1140px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 56px;
+  }
+
+  .nav-logo {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: #fff; }
+
+  .nav-btn {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #000;
+    background: #fff;
+    border: none;
+    padding: 9px 22px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: opacity 0.2s;
+  }
+  .nav-btn:hover { opacity: 0.82; }
+
+  /* ── hero ── */
+  section.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 60px 0 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+
+  .hero-content {
+    width: 100%;
+    max-width: 1140px;
+    padding: 0 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 5px 16px;
+    letter-spacing: 0.12em;
+    margin-bottom: 36px;
+  }
+
+  .badge-dot {
+    width: 5px; height: 5px;
+    background: #fff;
+    flex-shrink: 0;
+    animation: blink 1.2s step-end infinite;
+  }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  canvas#hero-logo {
+    display: block;
+    width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+    margin-bottom: 36px;
+  }
+
+  .hero-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.07em;
+    line-height: 2;
+    max-width: 520px;
+    margin: 0 auto 40px;
+  }
+
+  .cta-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: #000;
+    background: #fff;
+    border: 1px solid #fff;
+    padding: 13px 32px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-secondary {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.55);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.16);
+    padding: 13px 32px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-secondary:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+
+  .pills {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 52px;
+  }
+
+  .pill {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.28);
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 5px 14px;
+  }
+
+  .terminal-preview {
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: left;
+    margin-bottom: 0;
+  }
+
+  .term-bar {
+    background: rgba(255,255,255,0.05);
+    padding: 9px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .term-dot { width: 8px; height: 8px; border: 1px solid rgba(255,255,255,0.18); }
+
+  .term-title {
+    font-size: 10px;
+    color: rgba(255,255,255,0.22);
+    letter-spacing: 0.12em;
+    margin-left: 6px;
+  }
+
+  .term-body { padding: 20px 24px 24px; font-size: 12px; line-height: 2.1; }
+
+  .term-line { display: flex; gap: 10px; }
+  .term-prompt { color: rgba(255,255,255,0.18); }
+  .term-cmd { color: rgba(255,255,255,0.65); }
+  .term-out { color: rgba(255,255,255,0.28); padding-left: 20px; }
+  .term-ok { color: rgba(255,255,255,0.4); margin-right: 6px; }
+  .term-cursor {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: #fff;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+  }
+
+  .scroll-hint {
+    margin-top: 32px;
+    margin-bottom: 32px;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.15);
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── features ── */
+  .features-wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .feat {
+    padding: 44px 36px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+  }
+  .feat:last-child { border-right: none; }
+
+  .feat-tag {
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.2);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .feat-title {
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  .feat-desc {
+    font-size: 11px;
+    color: rgba(255,255,255,0.26);
+    line-height: 1.9;
+    letter-spacing: 0.03em;
+  }
+
+  /* ── footer ── */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    justify-content: center;
+  }
+
+  .footer-inner {
+    width: 100%;
+    max-width: 1140px;
+    padding: 24px 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .footer-txt {
+    font-size: 10px;
+    color: rgba(255,255,255,0.18);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── responsive ── */
+  @media (max-width: 900px) {
+    .nav-inner { padding: 0 28px; }
+    .nav-links { display: none; }
+    .hero-content { padding: 0 28px; }
+    .features { grid-template-columns: repeat(2, 1fr); }
+    .feat:nth-child(2) { border-right: none; }
+    .feat { padding: 32px 24px; }
+    .footer-inner { padding: 20px 28px; }
+  }
+
+  @media (max-width: 520px) {
+    .features { grid-template-columns: 1fr; }
+    .feat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .feat:last-child { border-bottom: none; }
+    .hero-content { padding: 0 20px; }
+  }
 </style>
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-logo">
-    <canvas id="nav-mem" width="28" height="28"></canvas>
-    <span class="nav-wordmark">mnemos</span>
-  </div>
-  <div class="nav-right">
-    <span class="nav-pill">● HydraDB</span>
-    <button class="nav-btn" onclick="location.href='http://localhost:3000'">open app →</button>
+<nav>
+  <div class="nav-inner">
+    <span class="nav-logo">MnemOS</span>
+    <ul class="nav-links">
+      <li><a href="#">docs</a></li>
+      <li><a href="https://github.com/yranjan06/MnemOS">github</a></li>
+      <li><a href="http://localhost:3000">demo</a></li>
+    </ul>
+    <button class="nav-btn" onclick="location.href='http://localhost:3000'">get started</button>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-anim">
-    <canvas id="hero-mem" width="200" height="200"></canvas>
-  </div>
+  <div class="grid-bg"></div>
 
-  <div class="hero-title-wrap">
-    <canvas id="pixel-text" width="480" height="80"></canvas>
-  </div>
-
-  <div class="badge-row">
-    <span class="badge" style="background:#1a2200;color:#d4f53c;border:1px solid rgba(212,245,60,.2)">open source</span>
-    <span class="badge" style="background:#0a1a2e;color:#6ec6f5;border:1px solid rgba(110,198,245,.2)">HydraDB powered</span>
-    <span class="badge" style="background:#1c1c1c;color:#555550;border:1px solid rgba(255,255,255,0.07)">docker native</span>
-  </div>
-
-  <p class="hero-sub" style="margin-top:16px">
-    Visual workflow builder for desktop AI agents.<br>
-    Drag nodes · Connect logic · Run in Docker.<br>
-    <strong>Every run remembered by HydraDB.</strong>
-  </p>
-
-  <div class="cta-row">
-    <button class="btn-fill" onclick="location.href='http://localhost:3000'">open app →</button>
-    <button class="btn-ghost" onclick="location.href='https://github.com/iamabhaydawar/MnemOS'">github</button>
-  </div>
-
-  <div style="display:flex;justify-content:center">
-    <div style="background:#1c1c1c;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:12px 20px;display:inline-flex;align-items:center;gap:10px">
-      <div style="width:6px;height:6px;border-radius:50%;background:#d4f53c"></div>
-      <span style="font-size:10px;color:#555550;letter-spacing:.06em">localhost:3000</span>
-      <span style="font-size:10px;color:#3a3a3a">·</span>
-      <span style="font-size:10px;color:#3a3a3a;letter-spacing:.04em">backend :8000</span>
+  <div class="hero-content">
+    <div class="badge">
+      <div class="badge-dot"></div>
+      hackathon build &mdash; agents under pressure
     </div>
-  </div>
-</section>
 
-<div class="stats">
-  <div class="stat"><div class="stat-n">14</div><div class="stat-l">node types</div></div>
-  <div class="stat"><div class="stat-n">∞</div><div class="stat-l">memory via HydraDB</div></div>
-  <div class="stat"><div class="stat-n">any</div><div class="stat-l">LLM provider</div></div>
-</div>
+    <canvas id="hero-logo"></canvas>
 
-<section class="sec">
-  <div class="sec-lbl">// <span>nodes</span> //</div>
-  <div class="sec-h">build any agent workflow<br>visually. no code required.</div>
-  <div style="font-size:12px;color:#555550;max-width:420px;line-height:1.75">Each node is an autonomous agent step. Connect them in sequence or in branches. Generate Python, hit Run.</div>
+    <p class="hero-sub">
+      drag. drop. deploy. build ai agents that browse the web,<br>
+      extract data, make decisions &mdash; and remember everything.
+    </p>
 
-  <div class="feat-grid">
-    <div class="feat-card">
-      <div class="feat-icon"><canvas id="icon1" width="20" height="20"></canvas></div>
-      <div class="feat-title">// browser automation //</div>
-      <div class="feat-body">Navigate, Do, Check, Fill, Read — <strong>full Playwright-powered</strong> browser control inside Docker. No setup needed.</div>
-      <div class="node-row">
-        <span class="node-chip" style="background:#05351e;color:#34d399;border:1px solid rgba(52,211,153,.2)">→ Navigate</span>
-        <span class="node-chip" style="background:#1e1b4b;color:#818cf8;border:1px solid rgba(129,140,248,.2)">≡ Fill</span>
-        <span class="node-chip" style="background:#1e1b4b;color:#818cf8;border:1px solid rgba(129,140,248,.2)">✓ Check</span>
+    <div class="cta-row">
+      <button class="btn-primary" onclick="location.href='http://localhost:3000'">[ quick start ]</button>
+      <button class="btn-secondary" onclick="location.href='https://github.com/yranjan06/MnemOS'">[ view on github ]</button>
+    </div>
+
+    <div class="pills">
+      <span class="pill">no code</span>
+      <span class="pill">persistent memory</span>
+      <span class="pill">auto-recover</span>
+      <span class="pill">cron scheduler</span>
+      <span class="pill">real browser</span>
+      <span class="pill">HydraDB + Groq</span>
+    </div>
+
+    <div class="terminal-preview">
+      <div class="term-bar">
+        <div class="term-dot"></div>
+        <div class="term-dot"></div>
+        <div class="term-dot"></div>
+        <span class="term-title">terminal</span>
+      </div>
+      <div class="term-body">
+        <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd">git clone https://github.com/yranjan06/MnemOS</span></div>
+        <div class="term-line"><span class="term-prompt">$</span><span class="term-cmd">cp .env.example .env &amp;&amp; docker compose up --build</span></div>
+        <div class="term-out"><span class="term-ok">&gt;&gt;</span> memory core initialized</div>
+        <div class="term-out"><span class="term-ok">&gt;&gt;</span> agent runtime ready &mdash; localhost:3000</div>
+        <div class="term-line"><span class="term-prompt">$</span><span class="term-cursor"></span></div>
       </div>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon"><canvas id="icon2" width="20" height="20"></canvas></div>
-      <div class="feat-title">// persistent memory //</div>
-      <div class="feat-body">Remember, Recall, Recover — <strong>HydraDB graph-enhanced</strong> vector memory. Cross-run, cross-session recall.</div>
-      <div class="node-row">
-        <span class="node-chip" style="background:#1a1040;color:#a78bfa;border:1px solid rgba(167,139,250,.2)">🧠 Remember</span>
-        <span class="node-chip" style="background:#1a1040;color:#a78bfa;border:1px solid rgba(167,139,250,.2)">⟳ Recall</span>
-        <span class="node-chip" style="background:#2a1010;color:#f87171;border:1px solid rgba(248,113,113,.2)">⚕ Recover</span>
-      </div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon"><canvas id="icon3" width="20" height="20"></canvas></div>
-      <div class="feat-title">// code + agents //</div>
-      <div class="feat-body">Code nodes run arbitrary Python. Agent nodes spawn <strong>sub-agents with full tool access.</strong> ForEach loops over lists.</div>
-      <div class="node-row">
-        <span class="node-chip" style="background:#1c1c1c;color:#9ca3af;border:1px solid rgba(156,163,175,.15)">&lt;/&gt; Code</span>
-        <span class="node-chip" style="background:#1a1040;color:#a78bfa;border:1px solid rgba(167,139,250,.2)">◈ Agent</span>
-        <span class="node-chip" style="background:#1c1500;color:#fbbf24;border:1px solid rgba(251,191,36,.2)">∀ ForEach</span>
-      </div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="font-size:16px">⊞</div>
-      <div class="feat-title">// plan node //</div>
-      <div class="feat-body">LLM decides the next action from a list of options. <strong>Dynamic branching</strong> without writing conditional code.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="font-size:16px;background:#0a1a2e;border-color:rgba(110,198,245,.2)">⚡</div>
-      <div class="feat-title">// any LLM //</div>
-      <div class="feat-body">Groq, Gemini, OpenAI, Anthropic, Ollama. <strong>Per-node LLM override</strong> — mix models in one workflow.</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon" style="font-size:16px">↓</div>
-      <div class="feat-title">// bootstrap //</div>
-      <div class="feat-body">Download files, clone repos, install deps before the main flow runs. <strong>Self-contained agent setup.</strong></div>
-    </div>
+
+    <p class="scroll-hint">scroll to explore</p>
   </div>
 </section>
 
-<section class="mem-sec">
-  <div class="mem-inner">
-    <div class="mem-left">
-      <div class="sec-lbl">// <span>memory layer</span> //</div>
-      <div class="sec-h" style="font-size:18px;margin-bottom:12px">HydraDB is not<br>a side feature.<br>It is the product.</div>
-      <div style="font-size:12px;color:#555550;line-height:1.8;margin-bottom:20px">Every workflow run stores observations in HydraDB's graph-enhanced vector store. The Recall node surfaces relevant memories semantically — no explicit query needed. Agents that remember get smarter every run.</div>
-      <div style="font-size:11px;color:#d4f53c;font-weight:700;letter-spacing:.04em">→ Remember node stores · Recall node retrieves</div>
+<div class="features-wrap">
+  <div class="features">
+    <div class="feat">
+      <div class="feat-tag">memory</div>
+      <div class="feat-title">remember node</div>
+      <div class="feat-desc">saves observations, prices, outcomes to HydraDB. persists across every run and container restart.</div>
     </div>
-    <div class="mem-right">
-      <div style="font-size:9px;color:#555550;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">workflow_001 · run history</div>
-      <div class="mem-card">
-        <div class="mem-row"><div class="mem-dot"></div><strong>run 1</strong> · remembered github_trending_repos</div>
-        <div class="mem-row"><div class="mem-dot"></div><strong>run 2</strong> · recalled 5 matches · score 1.33</div>
-        <div class="mem-row"><div class="mem-dot-blue"></div><strong>run 3</strong> · plan node chose new_repos_found</div>
-        <div class="mem-row"><div class="mem-dot"></div><strong>run 4</strong> · memory context improves plan quality</div>
-        <div class="mem-row" style="margin-top:6px;padding-top:12px;border-top:1px solid rgba(212,245,60,.08)">
-          <span style="color:#d4f53c;font-size:12px;flex-shrink:0">🧠</span>
-          <span style="color:#8aaa18;font-size:10px;line-height:1.6;margin-left:8px">Recall found 3 memories · top score 133% · sub_tenant: workflow_id</span>
-        </div>
-      </div>
+    <div class="feat">
+      <div class="feat-tag">memory</div>
+      <div class="feat-title">recall node</div>
+      <div class="feat-desc">fetches relevant past memory via graph-enhanced search. finds useful context, not just similar text.</div>
     </div>
-  </div>
-</section>
-
-<section class="stack-sec">
-  <div class="sec-lbl">// <span>tech stack</span> //</div>
-  <div class="sec-h" style="font-size:16px;margin-bottom:4px">real tools. no magic.</div>
-  <div style="font-size:11px;color:#555550;margin-bottom:4px">Python · FastAPI · React · HydraDB · Playwright · Docker · LiteLLM</div>
-  <div class="scroll-row">
-    <span class="s-tag s-tag-lime">Python 3.12</span>
-    <span class="s-tag s-tag-lime">FastAPI</span>
-    <span class="s-tag s-tag-lime">React 18</span>
-    <span class="s-tag s-tag-blue">HydraDB SDK</span>
-    <span class="s-tag s-tag-blue">LiteLLM</span>
-    <span class="s-tag s-tag-dim">Playwright</span>
-    <span class="s-tag s-tag-dim">Docker</span>
-    <span class="s-tag s-tag-dim">ReactFlow</span>
-    <span class="s-tag s-tag-dim">Monaco Editor</span>
-    <span class="s-tag s-tag-dim">Google ADK</span>
-  </div>
-</section>
-
-<section class="how-sec">
-  <div class="sec-lbl">// <span>how it works</span> //</div>
-  <div class="sec-h" style="font-size:16px">four steps. one container.</div>
-  <div class="step-grid">
-    <div class="step">
-      <div class="step-num">01</div>
-      <div class="step-title">design workflow</div>
-      <div class="step-body">Drag nodes onto the canvas. Connect them. Configure each node's task, LLM, and parameters.</div>
+    <div class="feat">
+      <div class="feat-tag">recovery</div>
+      <div class="feat-title">recover node</div>
+      <div class="feat-desc">wraps any action in auto error handling. checks memory for past failures, asks llm for a fix, retries.</div>
     </div>
-    <div class="step">
-      <div class="step-num">02</div>
-      <div class="step-title">generate code</div>
-      <div class="step-body">Hit Generate. The backend compiles your graph into a Python workflow.py — inspect it in the preview pane.</div>
+    <div class="feat">
+      <div class="feat-tag">adaptation</div>
+      <div class="feat-title">plan node</div>
+      <div class="feat-desc">reads memory context, llm picks best strategy from your options. different decision every run.</div>
     </div>
-    <div class="step">
-      <div class="step-num">03</div>
-      <div class="step-title">run in docker</div>
-      <div class="step-body">Hit Run. The agent executes inside the VM container with full browser access. Watch logs live.</div>
-    </div>
-    <div class="step">
-      <div class="step-num">04</div>
-      <div class="step-title">memory persists</div>
-      <div class="step-body">Remember nodes write to HydraDB. Every future run recalls past context. The agent compounds knowledge.</div>
-    </div>
-  </div>
-</section>
-
-<div style="background:#080810;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);padding:48px 28px;text-align:center">
-  <div style="font-size:9px;color:#555550;letter-spacing:.14em;text-transform:uppercase;margin-bottom:16px">// build your first agent //</div>
-  <div style="font-size:20px;font-weight:700;color:#f0f0ee;letter-spacing:-.01em;margin-bottom:8px">Visual. Autonomous. Always<br>remembering.</div>
-  <div style="font-size:12px;color:#555550;margin-bottom:28px">Free · Open source · One docker-compose up</div>
-  <div style="display:flex;gap:12px;justify-content:center">
-    <button class="btn-fill" onclick="location.href='http://localhost:3000'">launch mnemos →</button>
-    <button class="btn-ghost" onclick="location.href='https://github.com/iamabhaydawar/MnemOS'">github repo</button>
   </div>
 </div>
 
-<footer class="footer">
-  <div class="footer-logo">
-    <canvas id="footer-mem" width="22" height="22"></canvas>
-    <span class="footer-wordmark">mnemos</span>
-    <span style="font-size:9px;color:#2e2e2e;margin-left:4px;letter-spacing:.06em">powered by HydraDB</span>
-  </div>
-  <div class="footer-links">
-    <span class="footer-link">github</span>
-    <span class="footer-link">docs</span>
-    <span class="footer-link">hydradb</span>
-    <span class="footer-link">app</span>
+<footer>
+  <div class="footer-inner">
+    <span class="footer-txt">powered by HydraDB &middot; Groq &middot; Playwright</span>
+    <span class="footer-txt">agents that remember. workflows that adapt. zero code.</span>
   </div>
 </footer>
 
 <script>
-const LIME='#d4f53c', DIM='#191917', RING='#2a2a28', BLUE='#6ec6f5';
+const cv = document.getElementById('hero-logo');
+const ctx = cv.getContext('2d');
 
-/* ── Memory web animation ── */
-const RAW_NODES=[
-  {x:0,y:0,hot:true},
-  {x:-.55,y:-.35},{x:.55,y:-.35},{x:-.72,y:.18},{x:.72,y:.18},
-  {x:-.3,y:.65},{x:.3,y:.65},{x:-.15,y:-.78},{x:.15,y:-.78},
-  {x:-.82,y:-.15},{x:.82,y:-.15},{x:0,y:.82},
-  {x:-.5,y:.5},{x:.5,y:.5},{x:-.45,y:-.55},{x:.45,y:-.55},
-  {x:.68,y:-.55},{x:-.68,y:.55}
-];
-
-function drawMemWeb(canvas,size,t){
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,size,size);
-  ctx.fillStyle='#080808';
-  ctx.fillRect(0,0,size,size);
-  const cx=size/2,cy=size/2,sc=size/2.3;
-
-  // edges
-  for(let i=0;i<RAW_NODES.length;i++){
-    for(let j=i+1;j<RAW_NODES.length;j++){
-      const a=RAW_NODES[i],b=RAW_NODES[j];
-      const d=Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);
-      if(d>.72)continue;
-      const alpha=(1-d/.72)*.12;
-      ctx.beginPath();
-      ctx.moveTo(cx+a.x*sc,cy+a.y*sc);
-      ctx.lineTo(cx+b.x*sc,cy+b.y*sc);
-      ctx.strokeStyle=`rgba(212,245,60,${alpha})`;
-      ctx.lineWidth=.5;
-      ctx.stroke();
-    }
-  }
-
-  // pulse rings from center
-  for(let p=0;p<3;p++){
-    const phase=(t*.6+p*2.1)%(Math.PI*2);
-    const r=(Math.sin(phase)+1)/2*sc*.9;
-    const alpha=Math.max(0,.18-r/(sc*.9)*.18);
-    ctx.beginPath();
-    ctx.arc(cx,cy,r,0,Math.PI*2);
-    ctx.strokeStyle=`rgba(212,245,60,${alpha})`;
-    ctx.lineWidth=.8;
-    ctx.stroke();
-  }
-
-  // nodes
-  RAW_NODES.forEach((n,i)=>{
-    const px=cx+n.x*sc, py=cy+n.y*sc;
-    const wave=(Math.sin(t*.7-i*.45)+1)/2;
-    const dist=Math.sqrt(n.x**2+n.y**2);
-    const brightness=n.hot?1:0.15+wave*.55;
-    const r=n.hot?size*.038:size*.018*(0.9+wave*.3);
-    if(n.hot){
-      // glow
-      const g=ctx.createRadialGradient(px,py,0,px,py,r*3);
-      g.addColorStop(0,'rgba(212,245,60,0.3)');
-      g.addColorStop(1,'rgba(212,245,60,0)');
-      ctx.beginPath();ctx.arc(px,py,r*3,0,Math.PI*2);
-      ctx.fillStyle=g;ctx.fill();
-    }
-    ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);
-    ctx.fillStyle=n.hot?LIME:`rgba(212,245,60,${brightness})`;
-    ctx.fill();
-  });
-}
-
-/* ── Small node icon for cards ── */
-function drawNodeIcon(canvas,size,t,phase){
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,size,size);
-  const c=size/2,r=size*.36;
-  const sweep=((t+phase)%(Math.PI*2));
-  ctx.fillStyle=LIME;
-  ctx.beginPath();ctx.arc(c,c,size*.09,0,Math.PI*2);ctx.fill();
-  [.4,.7,1].forEach((f,ri)=>{
-    const ri2=r*f;
-    for(let a=0;a<Math.PI*2;a+=Math.PI/(4+ri)){
-      const x=c+Math.cos(a)*ri2, y=c+Math.sin(a)*ri2;
-      let trail=((sweep-a)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
-      let bright=trail<.12?1:trail<1.1?.8*(1-(trail-.12)/.98):0;
-      ctx.globalAlpha=bright>.05?bright:.5;
-      ctx.beginPath();ctx.arc(x,y,size*.052,0,Math.PI*2);
-      ctx.fillStyle=bright>.05?LIME:RING;ctx.fill();
-    }
-  });
-  ctx.globalAlpha=1;
-}
-
-/* ── Pixel font — MNEMOS ── */
-const FONT={
-  M:[[1,0,0,0,1],[1,1,0,1,1],[1,0,1,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
-  N:[[1,0,0,0,1],[1,1,0,0,1],[1,0,1,0,1],[1,0,0,1,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
-  E:[[1,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,1]],
-  O:[[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
-  S:[[0,1,1,1,1],[1,0,0,0,0],[1,0,0,0,0],[0,1,1,1,0],[0,0,0,0,1],[0,0,0,0,1],[1,1,1,1,0]]
+const GLYPHS={
+  'M':[[1,0,0,0,1],[1,1,0,1,1],[1,0,1,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+  'n':[[0,0,0,0],[0,0,0,0],[1,1,1,0],[1,0,0,1],[1,0,0,1],[1,0,0,1],[1,0,0,1]],
+  'e':[[0,0,0,0],[0,0,0,0],[0,1,1,0],[1,0,0,1],[1,1,1,1],[1,0,0,0],[0,1,1,1]],
+  'm':[[0,0,0,0,0],[0,0,0,0,0],[1,1,0,1,1],[1,0,1,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,0,0,0,1]],
+  'O':[[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  'S':[[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,0],[0,1,1,1,0],[0,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
 };
-const WORD='MNEMOS'.split('');
-const STEP=11,CHAR_W=5*STEP,GAP=STEP;
-const TOTAL_W=WORD.length*CHAR_W+(WORD.length-1)*GAP;
-const TEXT_H=7*STEP;
-const PT=document.getElementById('pixel-text');
-const ptCtx=PT.getContext('2d');
-let dotReveal=new Array(WORD.length*5*7).fill(0);
-let revealFrame=0;
 
-function drawPixelText(t){
-  ptCtx.clearRect(0,0,480,80);
-  const offX=(480-TOTAL_W)/2, offY=(80-TEXT_H)/2;
-  const sweep=(t*.8)%(Math.PI*2);
-  WORD.forEach((ch,ci)=>{
-    const rows=FONT[ch]||FONT.M;
-    const charX=offX+ci*(CHAR_W+GAP);
-    rows.forEach((row,ry)=>{
-      row.forEach((px,rx)=>{
-        const x=charX+rx*STEP+STEP/2;
-        const y=offY+ry*STEP+STEP/2;
-        const idx=ci*35+ry*5+rx;
-        const revealed=dotReveal[idx];
-        const isLit=px===1;
-        if(isLit&&revealed<1)dotReveal[idx]=Math.min(1,revealed+.06);
-        const alpha=isLit?dotReveal[idx]:.5;
-        let color;
-        if(isLit){
-          const ang=Math.atan2(y-40,x-240);
-          const da=((ang%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
-          const trail=(sweep-da+Math.PI*2)%(Math.PI*2);
-          const sb=trail<.08?1:trail<1.5?.8*(1-(trail-.08)/1.42):0;
-          if(sb>.1){
-            const tv=sb;
-            color=`rgb(${Math.round(252)},${Math.round(245*tv+120*(1-tv))},${Math.round(60*tv)})`;
-          } else {
-            color=LIME;
-          }
-        } else {
-          color='#1e1e1c';
-        }
-        ptCtx.globalAlpha=alpha;
-        ptCtx.beginPath();ptCtx.arc(x,y,STEP*.34,0,Math.PI*2);
-        ptCtx.fillStyle=color;ptCtx.fill();
-        ptCtx.globalAlpha=1;
-      });
-    });
-  });
-  if(revealFrame<100){
-    const n=Math.floor(revealFrame*2);
-    for(let i=0;i<Math.min(n,dotReveal.length);i++)
-      if(dotReveal[i]<1)dotReveal[i]=Math.min(1,dotReveal[i]+.05);
-    revealFrame++;
-  }
+const TEXT='MnemOS';
+const TAGLINE='build agents that never forget';
+
+let P,G,S,LG,CW,CH,bigW,bigX,bigY,tagY,tagFontSize;
+let revealed=0,tagChars=0,phase=0,frame=0,blink=true,blinkT=0;
+let animStarted=false;
+
+function gw(ch){const g=GLYPHS[ch];return g?g[0].length:0;}
+function totalBigW(){let w=0;for(let i=0;i<TEXT.length;i++){w+=gw(TEXT[i])*S;if(i<TEXT.length-1)w+=LG;}return w;}
+function letterX(idx){let x=0;for(let i=0;i<idx;i++)x+=gw(TEXT[i])*S+LG;return x;}
+function drawGlyph(g,x,y){
+  // ghost unlit dots — LED matrix feel
+  ctx.fillStyle='rgba(255,255,255,0.05)';
+  for(let r=0;r<g.length;r++)for(let c=0;c<g[r].length;c++)if(!g[r][c])ctx.fillRect(x+c*S,y+r*S,P,P);
+  // solid pixels
+  ctx.fillStyle='#fff';
+  for(let r=0;r<g.length;r++)for(let c=0;c<g[r].length;c++)if(g[r][c])ctx.fillRect(x+c*S,y+r*S,P,P);
 }
 
-/* ── Nav/footer tiny mem ── */
-function drawTinyMem(canvas,size,t){
-  const ctx=canvas.getContext('2d');
-  ctx.clearRect(0,0,size,size);
-  ctx.fillStyle='#080808';
-  ctx.fillRect(0,0,size,size);
-  const c=size/2;
-  // center dot
-  ctx.fillStyle=LIME;
-  ctx.beginPath();ctx.arc(c,c,size*.1,0,Math.PI*2);ctx.fill();
-  // 6 outer nodes
-  for(let i=0;i<6;i++){
-    const a=i*Math.PI/3+t*.4;
-    const r=size*.36;
-    const x=c+Math.cos(a)*r, y=c+Math.sin(a)*r;
-    const bright=(Math.sin(t*.8+i*1.05)+1)/2;
-    ctx.globalAlpha=0.2+bright*.7;
-    ctx.beginPath();ctx.arc(x,y,size*.08,0,Math.PI*2);
-    ctx.fillStyle=LIME;ctx.fill();
-    ctx.globalAlpha=.07+bright*.08;
-    ctx.beginPath();ctx.moveTo(c,c);ctx.lineTo(x,y);
-    ctx.strokeStyle=LIME;ctx.lineWidth=.5;ctx.stroke();
-    ctx.globalAlpha=1;
-  }
+function setup(){
+  CW = cv.offsetWidth || window.innerWidth;
+  const targetLogoW = CW * 0.97;
+  const letterCols = 28;
+  const letterGaps = 5;
+  const LG_RATIO = 1.6;
+  S = Math.floor(targetLogoW / (letterCols + letterGaps * LG_RATIO));
+  P = Math.max(2, Math.floor(S * 0.82));
+  G = S - P;
+  LG = Math.floor(S * LG_RATIO);
+  bigW = totalBigW();
+  bigX = Math.floor((CW - bigW) / 2);
+  bigY = Math.floor(S * 1.2);
+  tagFontSize = Math.max(11, Math.floor(S * 0.85));
+  tagY = bigY + 7*S + Math.floor(S * 1.8);
+  CH = tagY + tagFontSize + Math.floor(S * 1.5);
+  cv.width = CW;
+  cv.height = CH;
 }
 
-const heroC=document.getElementById('hero-mem');
-const navC=document.getElementById('nav-mem');
-const footC=document.getElementById('footer-mem');
-const i1=document.getElementById('icon1');
-const i2=document.getElementById('icon2');
-const i3=document.getElementById('icon3');
-
-let t=0,fr=0;
-function loop(){
-  t+=0.018;fr++;
-  drawMemWeb(heroC,200,t);
-  drawPixelText(t);
-  if(fr%2===0){
-    drawTinyMem(navC,28,t);
-    drawTinyMem(footC,22,t);
+function draw(){
+  ctx.fillStyle='#000';
+  ctx.fillRect(0,0,CW,CH);
+  for(let i=0;i<Math.min(revealed,TEXT.length);i++){const g=GLYPHS[TEXT[i]];if(g)drawGlyph(g,bigX+letterX(i),bigY);}
+  // scanline — sweeps top→bottom every 240 frames, pauses, repeats
+  if(phase>=2){
+    const PERIOD=280,SWEEP=140;
+    const t=frame%PERIOD;
+    if(t<SWEEP){
+      const sy=bigY+(t/SWEEP)*(7*S);
+      const alpha=0.12*(1-Math.abs(t/SWEEP-0.5)*2);
+      ctx.fillStyle=`rgba(255,255,255,${alpha})`;
+      ctx.fillRect(bigX,sy-1,bigW,3);
+    }
   }
-  if(fr%3===0){
-    drawNodeIcon(i1,20,t,0);
-    drawNodeIcon(i2,20,t,2.1);
-    drawNodeIcon(i3,20,t,4.2);
+  blinkT++;
+  if(blinkT%16===0)blink=!blink;
+  if(phase===0&&blink&&revealed<TEXT.length){ctx.fillStyle='#fff';ctx.fillRect(bigX+letterX(revealed),bigY,P,7*S-G);}
+  if(phase>=1){
+    const tag=TAGLINE.slice(0,tagChars);
+    ctx.font=`bold ${tagFontSize}px "Courier New",monospace`;
+    ctx.fillStyle='rgba(255,255,255,0.55)';
+    ctx.textBaseline='top';
+    const tw=ctx.measureText(TAGLINE).width;
+    const tx=Math.floor((CW-tw)/2);
+    ctx.fillText(tag,tx,tagY);
+    if(phase===1&&tagChars<TAGLINE.length&&blink){ctx.fillStyle='rgba(255,255,255,0.55)';ctx.fillRect(tx+ctx.measureText(tag).width+2,tagY,Math.floor(tagFontSize*0.55),tagFontSize);}
   }
-  requestAnimationFrame(loop);
+  frame++;
+  if(phase===0){if(frame%10===0&&revealed<TEXT.length)revealed++;if(revealed>=TEXT.length){phase=1;frame=0;}}
+  else if(phase===1){if(frame%3===0&&tagChars<TAGLINE.length)tagChars++;if(tagChars>=TAGLINE.length)phase=2;}
+  requestAnimationFrame(draw);
 }
-loop();
+
+function init(){
+  setup();
+  if(!animStarted){animStarted=true;draw();}
+}
+
+let resizeTimer;
+window.addEventListener('resize',()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(setup, 100);
+});
+init();
 </script>
 </body>
 </html>
