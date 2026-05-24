@@ -615,6 +615,54 @@ def _emit_node(
         lines.append(f'{pad}report_node("{node.id}", "success")')
         return lines
 
+    if node.type == "Recover":
+        # The Recover node wraps an action in try/except.
+        # If the action fails, the recovery agent proposes an alternative and retries once.
+        action_template = node.config.get("action", "")
+        action_expr = _resolve_all(action_template, nodes_by_id, edges_by_source) if action_template else "''"
+        label = node.label or node_id
+        max_retries = int(node.config.get("max_retries", 1))
+        lines.append(f'{pad}report_node("{node.id}", "running")')
+        lines.append(f'{pad}print("--- {node.id}: {node.label} (with recovery) ---")')
+        lines.append(f"{pad}from recovery import analyze_and_recover as _mnemos_recover")
+        lines.append(f"{pad}_{node.id}_action = str({action_expr})")
+        lines.append(f"{pad}_{node.id}_result = None")
+        lines.append(f"{pad}_{node.id}_retries = 0")
+        lines.append(f"{pad}while _{node.id}_retries <= {max_retries}:")
+        lines.append(f"{pad}    try:")
+        lines.append(f"{pad}        _{node.id}_result = await Do(")
+        lines.append(f"{pad}            _{node.id}_action,")
+        lines.append(f"{pad}            session=s, llm=model, verbose=verbose,")
+        lines.append(f"{pad}            pause_event=pause_event,")
+        lines.append(f"{pad}        ).run()")
+        lines.append(f"{pad}        if _{node.id}_result.status in ('error', 'failed'):")
+        lines.append(f"{pad}            raise RuntimeError(str(getattr(_{node.id}_result, 'output', 'action failed')))")
+        lines.append(f"{pad}        break")
+        lines.append(f"{pad}    except Exception as _{node.id}_err:")
+        lines.append(f"{pad}        _{node.id}_retries += 1")
+        lines.append(f"{pad}        print(f'[recover] attempt {{_{node.id}_retries}} failed: {{_{node.id}_err}}')")
+        lines.append(f"{pad}        if _{node.id}_retries > {max_retries}:")
+        lines.append(f"{pad}            report_node({node.id!r}, 'error')")
+        lines.append(f"{pad}            raise")
+        lines.append(f"{pad}        _plan = await _mnemos_recover(")
+        lines.append(f"{pad}            node_id={node.id!r},")
+        lines.append(f"{pad}            node_label={label!r},")
+        lines.append(f"{pad}            original_action=_{node.id}_action,")
+        lines.append(f"{pad}            error=str(_{node.id}_err),")
+        lines.append(f"{pad}            workflow_id=_workflow_id,")
+        lines.append(f"{pad}            run_id=_run_id,")
+        lines.append(f"{pad}        )")
+        lines.append(f"{pad}        if not _plan.get('should_retry', False):")
+        lines.append(f"{pad}            print('[recover] agent says do not retry, stopping')")
+        lines.append(f"{pad}            report_node({node.id!r}, 'error')")
+        lines.append(f"{pad}            raise")
+        lines.append(f"{pad}        _{node.id}_action = _plan.get('alternative_action', _{node.id}_action)")
+        lines.append(f"{pad}        print(f'[recover] retrying with: {{_{node.id}_action[:120]}}')")
+        lines.append(f"{pad}if _{node.id}_result is not None:")
+        lines.append(f"{pad}    {node.id}_out = getattr(_{node.id}_result, 'output', _{node.id}_result)")
+        lines.append(f'{pad}report_node("{node.id}", "success")')
+        return lines
+
     if node.type == "Plan":
         task_template = node.config.get("task", "")
         task_expr = _resolve_all(task_template, nodes_by_id, edges_by_source) if task_template else "''"
