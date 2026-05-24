@@ -1,0 +1,28 @@
+# Environment — never commit real keys
+.env
+.secrets.env
+
+# Auto-generated at runtime
+workflow.py
+
+# Frontend build artifacts
+frontend/node_modules/
+frontend/dist/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+
+# Misc
+commands.txt
+.DS_Store
+
+# Local-only Docker Compose overrides (e.g. workspace path on Windows)
+docker-compose.override.yml
+
+# Runtime workspace (mnemos.db, runs/, generated workflow.py, uploads, etc.)
+workspace/
+
+# Claude Code scratch + worktrees
+.claude/

@@ -1,0 +1,18 @@
+/* Removed default Vite styles to prevent interfering with App layout */
+
+/* MnemOS design tokens */
+:root {
+  --mnemos-purple: #6d28d9;
+  --mnemos-teal:   #0d9488;
+  --mnemos-red:    #dc2626;
+  --mnemos-blue:   #0369a1;
+}
+
+@keyframes node-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px var(--node-color, #2563eb); }
+  50%       { box-shadow: 0 0 0 5px color-mix(in srgb, var(--node-color, #2563eb) 40%, transparent); }
+}
+
+.node-running {
+  animation: node-pulse 1s ease-in-out infinite;
+}
