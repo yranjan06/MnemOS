@@ -66,18 +66,29 @@ cd MnemOS
 cp .env.example .env
 ```
 
-Edit `.env`:
+Edit `.env` with real keys:
 
 ```env
-GROQ_API_KEY=gsk_...              # groq.com — free tier
-HYDRA_DB_API_KEY=hdb_...          # app.hydradb.com — free sandbox
+GROQ_API_KEY=gsk_...              # console.groq.com → API Keys (free tier)
+HYDRA_DB_API_KEY=sk_live_...      # app.hydradb.com → Settings → API Keys (free sandbox)
 LITELLM_MODEL=groq/llama-3.3-70b-versatile
 ```
 
 ```bash
-docker compose up
-# Open http://localhost:3000
+docker compose up --build
+# First build: ~8-10 min (downloads Chrome, Playwright, Python deps)
+# Subsequent starts: ~30s (images cached)
 ```
+
+**Services after startup:**
+
+| URL | What |
+|-----|------|
+| `http://localhost:3000` | MnemOS UI |
+| `http://localhost:8000/docs` | FastAPI Swagger |
+| `http://localhost:6080` | Virtual desktop (noVNC) |
+
+> **Note:** The HydraDB API key format is `sk_live_...` (not `hdb_...`). Both formats are accepted.
 
 ---
 

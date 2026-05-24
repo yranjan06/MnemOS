@@ -578,7 +578,12 @@ def _emit_node(
     if node.type == "Remember":
         key = node.config.get("key", "observation")
         value_template = node.config.get("value", "")
-        value_expr = _resolve_all(value_template, nodes_by_id, edges_by_source) if value_template else "''"
+        if value_template:
+            value_resolved, value_fstr = _resolve_all(value_template, nodes_by_id)
+            value_q = "f" if value_fstr else ""
+            value_expr = f'{value_q}"{_esc(value_resolved)}"'
+        else:
+            value_expr = "''"
         lines.append(f'{pad}report_node("{node.id}", "running")')
         lines.append(f'{pad}print("--- {node.id}: {node.label} ---")')
         lines.append(f"{pad}from memory import remember as _mnemos_remember")
@@ -595,7 +600,12 @@ def _emit_node(
 
     if node.type == "Recall":
         query_template = node.config.get("query", "")
-        query_expr = _resolve_all(query_template, nodes_by_id, edges_by_source) if query_template else "''"
+        if query_template:
+            query_resolved, query_fstr = _resolve_all(query_template, nodes_by_id)
+            query_q = "f" if query_fstr else ""
+            query_expr = f'{query_q}"{_esc(query_resolved)}"'
+        else:
+            query_expr = "''"
         top_k = int(node.config.get("top_k", 5))
         lines.append(f'{pad}report_node("{node.id}", "running")')
         lines.append(f'{pad}print("--- {node.id}: {node.label} ---")')
@@ -619,8 +629,13 @@ def _emit_node(
         # The Recover node wraps an action in try/except.
         # If the action fails, the recovery agent proposes an alternative and retries once.
         action_template = node.config.get("action", "")
-        action_expr = _resolve_all(action_template, nodes_by_id, edges_by_source) if action_template else "''"
-        label = node.label or node_id
+        if action_template:
+            action_resolved, action_fstr = _resolve_all(action_template, nodes_by_id)
+            action_q = "f" if action_fstr else ""
+            action_expr = f'{action_q}"{_esc(action_resolved)}"'
+        else:
+            action_expr = "''"
+        label = node.label or node.id
         max_retries = int(node.config.get("max_retries", 1))
         lines.append(f'{pad}report_node("{node.id}", "running")')
         lines.append(f'{pad}print("--- {node.id}: {node.label} (with recovery) ---")')
@@ -665,7 +680,12 @@ def _emit_node(
 
     if node.type == "Plan":
         task_template = node.config.get("task", "")
-        task_expr = _resolve_all(task_template, nodes_by_id, edges_by_source) if task_template else "''"
+        if task_template:
+            task_resolved, task_fstr = _resolve_all(task_template, nodes_by_id)
+            task_q = "f" if task_fstr else ""
+            task_expr = f'{task_q}"{_esc(task_resolved)}"'
+        else:
+            task_expr = "''"
         options = node.config.get("options", [])
         lines.append(f'{pad}report_node("{node.id}", "running")')
         lines.append(f'{pad}print("--- {node.id}: {node.label} ---")')
