@@ -78,30 +78,33 @@ export default function MemoryPanel({ workflowId }) {
         )}
         {filtered.map((m, i) => {
           const isOpen = expanded === i;
-          const longVal = (m.value || '').length > 120;
           return (
             <div
               key={i}
-              style={{ ...styles.item(m.key), cursor: longVal ? 'pointer' : 'default' }}
-              onClick={() => longVal && setExpanded(isOpen ? null : i)}
-              title={longVal ? (isOpen ? 'Click to collapse' : 'Click to expand') : ''}
+              style={{ ...styles.item(m.key), cursor: 'pointer', transition: 'border-color 0.15s' }}
+              onClick={() => setExpanded(isOpen ? null : i)}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                 <div style={styles.itemKey}>{m.key || '—'}</div>
-                {longVal && <span style={{ fontSize: 9, color: '#6b6b8a' }}>{isOpen ? '▲' : '▼'}</span>}
+                <span style={{ fontSize: 10, color: '#6b6b8a', lineHeight: 1 }}>{isOpen ? '▲' : '▼'}</span>
               </div>
-              <div style={{
-                ...styles.itemValue,
-                maxHeight: isOpen ? 'none' : '3.6em',
-                overflow: isOpen ? 'visible' : 'hidden',
-                display: isOpen ? 'block' : '-webkit-box',
-                WebkitLineClamp: isOpen ? 'unset' : 3,
-                WebkitBoxOrient: 'vertical',
-              }}>
-                {m.value}
-              </div>
-              {m.score !== undefined && m.score > 0 && (
-                <div style={styles.itemMeta}>
+              {isOpen ? (
+                <div style={{ ...styles.itemValue, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                  {m.value}
+                </div>
+              ) : (
+                <div style={{
+                  ...styles.itemValue,
+                  overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                }}>
+                  {m.value}
+                </div>
+              )}
+              {isOpen && m.score !== undefined && m.score > 0 && (
+                <div style={{ ...styles.itemMeta, marginTop: 6, paddingTop: 6, borderTop: '1px solid #1e1e3a' }}>
                   relevance {(m.score * 100).toFixed(0)}%
                   {m.created_at ? ` · ${m.created_at.slice(0, 16)}` : ''}
                 </div>
