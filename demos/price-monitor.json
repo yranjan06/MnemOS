@@ -1,0 +1,83 @@
+{
+  "name": "Price Monitor — MnemOS Demo",
+  "description": "Monitors a product page, stores price history in HydraDB, recovers from extraction failures, uses Plan node for adaptation. Exercises all 4 hackathon tracks.",
+  "tracks": {
+    "memory":   "Recall node fetches price history; Remember node stores new observation",
+    "tools":    "Navigate + Read (browser) + Code (inline Python) + HydraDB memory API",
+    "recovery": "Recover node wraps Read — if extraction fails, LLM suggests alternative selector",
+    "adaptation": "Plan node decides whether to alert, skip, or investigate based on memory context"
+  },
+  "version": "1",
+  "global": {
+    "llm": "groq/llama-3.3-70b-versatile",
+    "human_in_the_loop": false
+  },
+  "nodes": [
+    {
+      "id": "recall_history",
+      "type": "Recall",
+      "label": "Recall Price History",
+      "position": { "x": 180, "y": 60 },
+      "config": {
+        "query": "product price observation books.toscrape.com",
+        "top_k": 5
+      }
+    },
+    {
+      "id": "navigate",
+      "type": "Navigate",
+      "label": "Go to Product Page",
+      "position": { "x": 180, "y": 200 },
+      "config": {
+        "target": "https://books.toscrape.com/catalogue/a-light-in-the-attic_1000/index.html",
+        "extra_info": "Wait for the page to fully load before reading price."
+      }
+    },
+    {
+      "id": "read_price",
+      "type": "Recover",
+      "label": "Extract Price (with recovery)",
+      "position": { "x": 180, "y": 340 },
+      "config": {
+        "action": "Find and extract the book price shown on the page. Look for a price element — usually starts with £ or $.",
+        "max_retries": 1
+      }
+    },
+    {
+      "id": "decide",
+      "type": "Plan",
+      "label": "Decide: Alert or Skip?",
+      "position": { "x": 180, "y": 480 },
+      "config": {
+        "task": "Based on price history from memory and the current page state, decide what to do next",
+        "options": ["alert_price_change", "log_no_change", "investigate_further"]
+      }
+    },
+    {
+      "id": "remember_price",
+      "type": "Remember",
+      "label": "Store Price in Memory",
+      "position": { "x": 180, "y": 620 },
+      "config": {
+        "key": "product_price",
+        "value": "price extracted from books.toscrape.com at this run"
+      }
+    },
+    {
+      "id": "log_result",
+      "type": "Code",
+      "label": "Log Summary",
+      "position": { "x": 180, "y": 760 },
+      "config": {
+        "code": "print('=== MnemOS Price Monitor ===')\nprint(f'Past memory entries: {len(recall_history_out.memories)}')\nif recall_history_out.memories:\n    print(f'Last known: {recall_history_out.context[:200]}')\nprint(f'Decision: {decide_out.action}')\nprint(f'Reason: {decide_out.reason}')\nprint('Memory stored. Run complete.')"
+      }
+    }
+  ],
+  "edges": [
+    { "id": "e1", "source": "recall_history", "target": "navigate",      "type": "sequential", "sourceHandle": "handle-out", "targetHandle": "handle-in" },
+    { "id": "e2", "source": "navigate",        "target": "read_price",    "type": "sequential", "sourceHandle": "handle-out", "targetHandle": "handle-in" },
+    { "id": "e3", "source": "read_price",      "target": "decide",        "type": "sequential", "sourceHandle": "handle-out", "targetHandle": "handle-in" },
+    { "id": "e4", "source": "decide",          "target": "remember_price","type": "sequential", "sourceHandle": "handle-out", "targetHandle": "handle-in" },
+    { "id": "e5", "source": "remember_price",  "target": "log_result",    "type": "sequential", "sourceHandle": "handle-out", "targetHandle": "handle-in" }
+  ]
+}
