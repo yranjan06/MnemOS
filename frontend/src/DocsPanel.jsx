@@ -190,7 +190,7 @@ export default function DocsPanel() {
         </p>
 
         <img src={imageDoc} alt="Example workflow"
-          style={{ width: '100%', borderRadius: 10, border: '1px solid #e5e4e0', marginBottom: 6, display: 'block' }} />
+          style={{ width: '100%', borderRadius: 6, border: '1px solid rgba(255,255,255,0.08)', marginBottom: 6, display: 'block' }} />
         <p style={{ fontSize: 11, color: '#aaa', marginBottom: 40, textAlign: 'center' }}>An example multi-step workflow</p>
 
         {/* â”€â”€ QUICK START â”€â”€ */}

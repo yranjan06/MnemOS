@@ -28,7 +28,7 @@ function DeletableEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition,
           }}
         >
           {label && (
-            <span style={{ fontSize: 10, background: '#fff', padding: '1px 5px', borderRadius: 3, border: '1px solid #e2e2e2', color: '#666' }}>
+            <span style={{ fontSize: 10, background: '#1c1c1c', padding: '1px 5px', borderRadius: 3, border: '1px solid rgba(255,255,255,0.1)', color: '#888880' }}>
               {label}
             </span>
           )}
@@ -38,9 +38,9 @@ function DeletableEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition,
             style={{
               width: 16, height: 16,
               borderRadius: '50%',
-              border: '1px solid #ddd',
-              background: '#fff',
-              color: '#aaa',
+              border: '1px solid rgba(255,255,255,0.12)',
+              background: '#1c1c1c',
+              color: '#555550',
               fontSize: 11,
               cursor: 'pointer',
               display: 'flex',
@@ -49,8 +49,8 @@ function DeletableEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition,
               padding: 0,
               lineHeight: 1,
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; e.currentTarget.style.borderColor = '#fca5a5'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#aaa'; e.currentTarget.style.borderColor = '#ddd'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#2a1a1a'; e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.4)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#1c1c1c'; e.currentTarget.style.color = '#555550'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; }}
           >
             ×
           </button>
@@ -63,11 +63,11 @@ function DeletableEdge({ id, sourceX, sourceY, targetX, targetY, sourcePosition,
 const edgeTypes = { deletable: DeletableEdge };
 
 const EDGE_STROKE = {
-  sequential:        '#c0bdb8',
-  conditional_true:  '#4ade80',
-  conditional_false: '#f87171',
-  loop_back:         '#f59e0b',
-  foreach_done:      '#94a3b8',
+  sequential:        'rgba(255,255,255,0.18)',
+  conditional_true:  '#d4f53c',
+  conditional_false: '#ef4444',
+  loop_back:         'rgba(255,255,255,0.35)',
+  foreach_done:      'rgba(255,255,255,0.25)',
 };
 
 // Auto-pans the viewport to the currently running node.
@@ -191,7 +191,7 @@ export default function GraphBuilder({ graph, onNodesChange, onEdgesChange, onCo
   );
 
   return (
-    <div style={{ flex: 1, width: '100%', height: '100%', minHeight: 0, borderRadius: 12, overflow: 'hidden', background: '#f9f9f7', border: '1px solid #e5e4e0', position: 'relative' }}>
+    <div style={{ flex: 1, width: '100%', height: '100%', minHeight: 0, borderRadius: 8, overflow: 'hidden', background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.07)', position: 'relative' }}>
       <ReactFlow
         nodes={flowNodes}
         edges={flowEdges}
@@ -205,7 +205,7 @@ export default function GraphBuilder({ graph, onNodesChange, onEdgesChange, onCo
         fitView
         attributionPosition="bottom-left"
       >
-        <Background gap={20} color="#d9d9d9" variant="dots" size={1} />
+        <Background gap={20} color="#2a2a28" variant="dots" size={1} />
         <Controls showInteractive={false} />
         <AutoPanner nodeStatuses={nodeStatuses} />
       </ReactFlow>

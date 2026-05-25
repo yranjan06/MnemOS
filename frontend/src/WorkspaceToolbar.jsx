@@ -1,22 +1,22 @@
 const ADD_NODES = [
-  ['Navigate', '#059669'],
-  ['Do', '#2563eb'],
-  ['Check', '#d97706'],
-  ['Fill', '#7c3aed'],
-  ['Read', '#0891b2'],
-  ['Code', '#6b7280'],
-  ['Agent', '#7c3aed'],
-  ['ForEach', '#f59e0b'],
-  ['Bootstrap', '#b45309'],
-  ['Remember', '#6d28d9'],
-  ['Recall', '#6d28d9'],
-  ['Recover', '#dc2626'],
-  ['Plan', '#0369a1'],
+  ['Navigate', '#c8c8c4'],
+  ['Do', '#c8c8c4'],
+  ['Check', '#c8c8c4'],
+  ['Fill', '#c8c8c4'],
+  ['Read', '#c8c8c4'],
+  ['Code', '#888880'],
+  ['Agent', '#c8c8c4'],
+  ['ForEach', '#888880'],
+  ['Bootstrap', '#888880'],
+  ['Remember', '#d4f53c'],
+  ['Recall', '#d4f53c'],
+  ['Recover', '#d4f53c'],
+  ['Plan', '#d4f53c'],
 ];
 
 const TYPE_ICONS = {
   Navigate: '→', Do: '⚡', Check: '✓', Fill: '≡', Read: '»', Code: '</>', Agent: '◈', ForEach: '∀', Bootstrap: '↓',
-  Remember: '🧠', Recall: '⟳', Recover: '⚕', Plan: '⊞',
+  Remember: '●', Recall: '⟳', Recover: '↺', Plan: '⊞',
 };
 
 export default function WorkspaceToolbar({ onAddNode, onSave, onGenerate, onPreview, onStart, status, disabled, running }) {

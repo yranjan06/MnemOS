@@ -274,68 +274,210 @@ export default function App() {
           background: #000; overflow: hidden;
         }
 
-        /* home page */
+        /* home page — unified with landing page design system */
         .home-page {
           flex: 1; display: flex; flex-direction: column;
+          align-items: stretch;
+          overflow: auto;
+        }
+
+        .home-hero {
+          display: flex; flex-direction: column;
           align-items: center; justify-content: center;
-          overflow: auto; padding: 48px 32px;
+          padding: 72px 32px 56px;
           text-align: center;
+          position: relative;
         }
-        .home-logo-wrap { margin-bottom: 28px; }
+
+        .home-badge {
+          display: inline-flex; align-items: center; gap: 8px;
+          font-size: 10px; color: rgba(255,255,255,0.32);
+          border: 1px solid rgba(255,255,255,0.11);
+          padding: 5px 14px;
+          letter-spacing: 0.12em; text-transform: lowercase;
+          margin-bottom: 36px;
+        }
+        .home-badge-dot {
+          width: 5px; height: 5px;
+          background: #d4f53c;
+          flex-shrink: 0;
+          animation: home-blink 1.2s step-end infinite;
+        }
+        @keyframes home-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+        .home-logo-wrap { margin-bottom: 32px; }
+
         .home-tagline {
-          font-size: 12px; color: rgba(255,255,255,0.28);
-          line-height: 2; margin-bottom: 28px;
-          max-width: 380px;
+          font-size: 13px; color: rgba(255,255,255,0.48);
+          letter-spacing: 0.05em; line-height: 2;
+          max-width: 480px; margin-bottom: 32px;
         }
-        .home-tagline strong { color: rgba(255,255,255,0.6); font-weight: 700; }
-        .home-cta-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 36px; }
+
+        .home-cta-row {
+          display: flex; gap: 10px; justify-content: center;
+          margin-bottom: 32px; flex-wrap: wrap;
+        }
         .home-btn-primary {
-          font-size: 10px; font-weight: 700; padding: 9px 22px;
-          background: rgba(255,255,255,0.9); color: #000;
-          border: none; cursor: pointer;
           font-family: 'Courier New', monospace;
-          letter-spacing: 0.1em; text-transform: uppercase;
-          transition: background 0.12s;
+          font-size: 11px; font-weight: 700;
+          padding: 11px 26px;
+          background: #fff; color: #000;
+          border: 1px solid #fff; cursor: pointer;
+          letter-spacing: 0.1em; text-transform: lowercase;
+          transition: opacity 0.18s;
         }
-        .home-btn-primary:hover { background: #fff; }
+        .home-btn-primary:hover { opacity: 0.85; }
         .home-btn-ghost {
-          font-size: 10px; font-weight: 700; padding: 9px 22px;
-          background: transparent; color: rgba(255,255,255,0.4);
-          border: 1px solid rgba(255,255,255,0.12); cursor: pointer;
           font-family: 'Courier New', monospace;
-          letter-spacing: 0.1em; text-transform: uppercase;
-          transition: border-color 0.12s, color 0.12s;
+          font-size: 11px; font-weight: 700;
+          padding: 11px 26px;
+          background: transparent; color: rgba(255,255,255,0.5);
+          border: 1px solid rgba(255,255,255,0.14); cursor: pointer;
+          letter-spacing: 0.1em; text-transform: lowercase;
+          transition: border-color 0.18s, color 0.18s;
         }
-        .home-btn-ghost:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); }
-        .home-stats {
-          display: flex; gap: 0;
-          border: 1px solid rgba(255,255,255,0.06);
-          margin-bottom: 32px;
+        .home-btn-ghost:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+
+        .home-pills {
+          display: flex; justify-content: center; gap: 7px;
+          flex-wrap: wrap; max-width: 640px;
         }
-        .home-stat {
-          padding: 18px 32px; text-align: center;
-          border-right: 1px solid rgba(255,255,255,0.06);
+        .home-pill {
+          font-size: 9px; letter-spacing: 0.1em;
+          color: rgba(255,255,255,0.22);
+          border: 1px solid rgba(255,255,255,0.07);
+          padding: 4px 12px;
+          text-transform: lowercase;
+          transition: border-color 0.18s, color 0.18s;
         }
-        .home-stat:last-child { border-right: none; }
-        .home-stat-n { font-size: 28px; font-weight: 700; color: #fff; line-height: 1; }
-        .home-stat-l { font-size: 8px; color: rgba(255,255,255,0.2); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 5px; }
-        .home-feat-grid {
-          display: grid; grid-template-columns: repeat(3, 1fr);
-          gap: 1px; background: rgba(255,255,255,0.05);
-          width: 100%; max-width: 720px;
-          border: 1px solid rgba(255,255,255,0.05);
-          text-align: left;
+        .home-pill:hover { border-color: rgba(255,255,255,0.16); color: rgba(255,255,255,0.48); }
+
+        /* problem / solution */
+        .home-statement {
+          padding: 64px 32px;
+          border-top: 1px solid rgba(255,255,255,0.06);
+          display: flex; justify-content: center;
+        }
+        .home-statement-inner {
+          max-width: 620px; text-align: center;
+          display: flex; flex-direction: column; gap: 24px;
+        }
+        .home-statement-problem {
+          font-size: 12px; color: rgba(255,255,255,0.22);
+          letter-spacing: 0.05em; line-height: 2;
+        }
+        .home-statement-solution {
+          font-size: 13px; color: rgba(255,255,255,0.68);
+          letter-spacing: 0.04em; line-height: 1.9;
+        }
+        .home-statement-solution strong {
+          color: rgba(255,255,255,0.92); font-weight: normal;
+          border-bottom: 1px solid rgba(255,255,255,0.2);
+          padding-bottom: 1px;
+        }
+
+        /* features */
+        .home-features {
+          display: grid; grid-template-columns: repeat(4, 1fr);
+          border-top: 1px solid rgba(255,255,255,0.06);
         }
         .home-feat {
-          background: #000; padding: 18px 20px;
-          transition: background 0.12s;
+          padding: 36px 28px;
+          border-right: 1px solid rgba(255,255,255,0.06);
+          transition: background 0.2s;
         }
-        .home-feat:hover { background: rgba(255,255,255,0.02); }
+        .home-feat:last-child { border-right: none; }
+        .home-feat:hover { background: rgba(255,255,255,0.015); }
+        .home-feat-tag {
+          display: inline-flex; align-items: center; gap: 7px;
+          font-size: 9px; color: rgba(255,255,255,0.22);
+          letter-spacing: 0.18em; text-transform: uppercase;
+          margin-bottom: 14px;
+        }
+        .home-feat-tag::before {
+          content: ''; width: 4px; height: 4px;
+          background: #d4f53c; opacity: 0.45;
+          flex-shrink: 0;
+        }
         .home-feat-title {
-          font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.5);
-          letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px;
+          font-size: 13px; color: rgba(255,255,255,0.78);
+          letter-spacing: 0.04em; margin-bottom: 10px;
         }
-        .home-feat-body { font-size: 10px; color: rgba(255,255,255,0.2); line-height: 1.7; }
+        .home-feat-desc {
+          font-size: 10px; color: rgba(255,255,255,0.36);
+          line-height: 1.9; letter-spacing: 0.03em;
+        }
+
+        /* how it works */
+        .home-how {
+          border-top: 1px solid rgba(255,255,255,0.06);
+          padding: 64px 32px;
+        }
+        .home-section-label {
+          font-size: 9px; color: rgba(255,255,255,0.22);
+          letter-spacing: 0.22em; text-transform: uppercase;
+          margin-bottom: 44px;
+        }
+        .home-steps {
+          display: grid; grid-template-columns: repeat(3, 1fr);
+        }
+        .home-step { padding-right: 36px; border-right: 1px solid rgba(255,255,255,0.06); }
+        .home-step:last-child { border-right: none; padding-right: 0; }
+        .home-step:not(:first-child) { padding-left: 36px; }
+        .home-step-num {
+          font-size: 11px; color: #d4f53c; opacity: 0.65;
+          letter-spacing: 0.18em; margin-bottom: 18px;
+        }
+        .home-step-title {
+          font-size: 13px; color: rgba(255,255,255,0.78);
+          letter-spacing: 0.04em; margin-bottom: 10px;
+        }
+        .home-step-desc {
+          font-size: 10px; color: rgba(255,255,255,0.36);
+          line-height: 1.9; letter-spacing: 0.03em;
+        }
+
+        /* final cta */
+        .home-final-cta {
+          border-top: 1px solid rgba(255,255,255,0.06);
+          padding: 80px 32px 96px;
+          display: flex; justify-content: center;
+          position: relative; overflow: hidden;
+        }
+        .home-final-cta::before {
+          content: ''; position: absolute;
+          width: 600px; height: 300px;
+          background: radial-gradient(ellipse, rgba(212,245,60,0.035) 0%, transparent 70%);
+          top: 50%; left: 50%;
+          transform: translate(-50%, -50%);
+          pointer-events: none;
+        }
+        .home-final-inner {
+          max-width: 480px; text-align: center;
+          display: flex; flex-direction: column; align-items: center; gap: 18px;
+          position: relative; z-index: 1;
+        }
+        .home-final-headline {
+          font-size: 16px; color: rgba(255,255,255,0.85);
+          letter-spacing: 0.05em; line-height: 1.7;
+        }
+        .home-final-sub {
+          font-size: 11px; color: rgba(255,255,255,0.22);
+          letter-spacing: 0.07em; line-height: 1.8;
+        }
+
+        @media (max-width: 860px) {
+          .home-features { grid-template-columns: repeat(2, 1fr); }
+          .home-feat:nth-child(2) { border-right: none; }
+          .home-steps { grid-template-columns: 1fr; }
+          .home-step { border-right: none; padding: 0 0 32px 0 !important; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 32px; }
+          .home-step:last-child { border-bottom: none; padding-bottom: 0 !important; margin-bottom: 0; }
+        }
+        @media (max-width: 520px) {
+          .home-features { grid-template-columns: 1fr; }
+          .home-feat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+          .home-feat:last-child { border-bottom: none; }
+        }
 
         /* desktop logo banner */
         .desktop-logo-banner {
@@ -385,40 +527,98 @@ export default function App() {
             </div>
           )}
 
-          {/* Home — hero page */}
+          {/* Home — unified with landing page design */}
           {activeTab === 'Home' && (
             <div className="home-page">
-              <div className="home-logo-wrap">
-                <PixelLogo scale={10} />
+              {/* Hero */}
+              <div className="home-hero">
+                <div className="home-badge">
+                  <div className="home-badge-dot"></div>
+                  open source · mit license · visual ai agent builder
+                </div>
+                <div className="home-logo-wrap">
+                  <PixelLogo scale={10} />
+                </div>
+                <p className="home-tagline">
+                  drag. drop. deploy. build ai agents that browse the web,<br />
+                  extract data, make decisions — and remember everything.
+                </p>
+                <div className="home-cta-row">
+                  <button className="home-btn-primary" onClick={() => setActiveTab('Tasks')}>open workspace</button>
+                  <button className="home-btn-ghost" onClick={() => setActiveTab('Desktop')}>view desktop</button>
+                </div>
+                <div className="home-pills">
+                  <span className="home-pill">no code</span>
+                  <span className="home-pill">persistent memory</span>
+                  <span className="home-pill">auto-recover</span>
+                  <span className="home-pill">cron scheduler</span>
+                  <span className="home-pill">real browser</span>
+                  <span className="home-pill">HydraDB + Groq</span>
+                </div>
               </div>
-              <p className="home-tagline">
-                Visual workflow builder for desktop AI agents.<br />
-                Drag nodes · Connect logic · Run in Docker.<br />
-                <strong>Every run remembered by HydraDB.</strong>
-              </p>
-              <div className="home-stats">
-                <div className="home-stat"><div className="home-stat-n">14</div><div className="home-stat-l">node types</div></div>
-                <div className="home-stat"><div className="home-stat-n">∞</div><div className="home-stat-l">memory via HydraDB</div></div>
-                <div className="home-stat"><div className="home-stat-n">any</div><div className="home-stat-l">LLM provider</div></div>
+
+              {/* Problem / Solution */}
+              <div className="home-statement">
+                <div className="home-statement-inner">
+                  <p className="home-statement-problem">
+                    most ai agents are amnesiac. they start fresh every run, repeat the same mistakes,
+                    and have no concept of what worked before.
+                  </p>
+                  <p className="home-statement-solution">
+                    MnemOS gives your agents <strong>persistent memory</strong>, <strong>automatic error recovery</strong>,
+                    and <strong>context-aware decision making</strong> — built into every node.
+                  </p>
+                </div>
               </div>
-              <div className="home-cta-row">
-                <button className="home-btn-primary" onClick={() => setActiveTab('Tasks')}>open workspace →</button>
-                <button className="home-btn-ghost" onClick={() => setActiveTab('Desktop')}>view desktop</button>
-              </div>
-              <div className="home-feat-grid">
+
+              {/* Features */}
+              <div className="home-features">
                 {[
-                  ['browser automation', 'Playwright-powered Navigate, Do, Fill, Check, Read nodes. Full desktop browser inside Docker.'],
-                  ['persistent memory', 'HydraDB graph-enhanced vector store. Remember nodes write, Recall nodes retrieve across runs.'],
-                  ['code + agents', 'Code nodes run arbitrary Python. Agent nodes spawn sub-agents with full tool access.'],
-                  ['plan node', 'LLM decides the next branch from options. Dynamic routing without conditional code.'],
-                  ['any LLM', 'Groq, Gemini, OpenAI, Anthropic, Ollama. Per-node LLM override in one workflow.'],
-                  ['docker native', 'Everything runs in a single container. One docker-compose up and you\'re live.'],
-                ].map(([title, body]) => (
+                  ['memory', 'remember node', 'saves observations, prices, and outcomes to HydraDB. persists across every run and container restart — your agent never forgets.'],
+                  ['memory', 'recall node', 'fetches relevant past memory via graph-enhanced search. surfaces useful context, not just similar text — real situational awareness.'],
+                  ['recovery', 'recover node', 'wraps any action in automatic error handling. checks memory for past failures, asks the llm for a fix, and retries.'],
+                  ['adaptation', 'plan node', 'reads memory context and picks the best strategy from your options. its decision changes every run based on what actually worked.'],
+                ].map(([tag, title, desc]) => (
                   <div key={title} className="home-feat">
+                    <div className="home-feat-tag">{tag}</div>
                     <div className="home-feat-title">{title}</div>
-                    <div className="home-feat-body">{body}</div>
+                    <div className="home-feat-desc">{desc}</div>
                   </div>
                 ))}
+              </div>
+
+              {/* How It Works */}
+              <div className="home-how">
+                <div className="home-section-label">how it works</div>
+                <div className="home-steps">
+                  <div className="home-step">
+                    <div className="home-step-num">01.</div>
+                    <div className="home-step-title">pick a node</div>
+                    <div className="home-step-desc">choose from 14 node types — navigate, do, check, fill, read, code, agent, remember, recall, recover, plan. drag onto the canvas.</div>
+                  </div>
+                  <div className="home-step">
+                    <div className="home-step-num">02.</div>
+                    <div className="home-step-title">connect logic</div>
+                    <div className="home-step-desc">wire nodes together with sequential, conditional, or loop edges. add memory nodes wherever context matters.</div>
+                  </div>
+                  <div className="home-step">
+                    <div className="home-step-num">03.</div>
+                    <div className="home-step-title">run and adapt</div>
+                    <div className="home-step-desc">trigger manually or on a cron schedule. watch your agent execute in a real browser, recover from errors, and improve every run.</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Final CTA */}
+              <div className="home-final-cta">
+                <div className="home-final-inner">
+                  <p className="home-final-headline">build your first agent<br />in under ten minutes.</p>
+                  <p className="home-final-sub">open source · self-hosted · no vendor lock-in</p>
+                  <div className="home-cta-row" style={{ marginBottom: 0 }}>
+                    <button className="home-btn-primary" onClick={() => setActiveTab('Tasks')}>open workspace</button>
+                    <button className="home-btn-ghost" onClick={() => setActiveTab('Docs')}>read the docs</button>
+                  </div>
+                </div>
               </div>
             </div>
           )}

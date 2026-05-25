@@ -2,18 +2,19 @@ import { useEffect, useState } from 'react';
 import { Handle, Position } from '@xyflow/react';
 
 const TYPE_META = {
-  Do:        { icon: '⚡', color: '#6ec6f5' },
-  Navigate:  { icon: '→',  color: '#d4f53c' },
-  Check:     { icon: '✓',  color: '#f59e0b' },
-  Fill:      { icon: '≡',  color: '#a78bfa' },
-  Read:      { icon: '»',  color: '#6ec6f5' },
+  Navigate:  { icon: '→',  color: '#c8c8c4' },
+  Do:        { icon: '⚡', color: '#c8c8c4' },
+  Check:     { icon: '✓',  color: '#c8c8c4' },
+  Fill:      { icon: '≡',  color: '#c8c8c4' },
+  Read:      { icon: '»',  color: '#c8c8c4' },
   Code:      { icon: '</>', color: '#888880' },
-  Agent:     { icon: '◈',  color: '#a78bfa' },
-  Bootstrap: { icon: '↓',  color: '#f59e0b' },
-  Remember:  { icon: '🧠', color: '#d4f53c' },
+  Agent:     { icon: '◈',  color: '#c8c8c4' },
+  Bootstrap: { icon: '↓',  color: '#888880' },
+  ForEach:   { icon: '∀',  color: '#888880' },
+  Remember:  { icon: '●',  color: '#d4f53c' },
   Recall:    { icon: '⟳',  color: '#d4f53c' },
-  Recover:   { icon: '⚕',  color: '#ef4444' },
-  Plan:      { icon: '⊞',  color: '#6ec6f5' },
+  Recover:   { icon: '↺',  color: '#d4f53c' },
+  Plan:      { icon: '⊞',  color: '#d4f53c' },
 };
 
 const handle = {
