@@ -85,16 +85,7 @@ EOF
 
 # Generate MnemOS dark dot-grid wallpaper
 RUN mkdir -p /usr/share/backgrounds/mnemos && \
-    python3 -c "
-from PIL import Image, ImageDraw
-w, h = 1920, 1080
-img = Image.new('RGB', (w, h), (15, 15, 15))
-draw = ImageDraw.Draw(img)
-for x in range(0, w, 24):
-    for y in range(0, h, 24):
-        draw.ellipse([x-1,y-1,x+1,y+1], fill=(42,42,40))
-img.save('/usr/share/backgrounds/mnemos/dark.png')
-"
+    python3 -c "import PIL.Image as I,PIL.ImageDraw as D; w,h=1920,1080; img=I.new('RGB',(w,h),(15,15,15)); d=D.Draw(img); [d.ellipse([x-1,y-1,x+1,y+1],fill=(42,42,40)) for x in range(0,w,24) for y in range(0,h,24)]; img.save('/usr/share/backgrounds/mnemos/dark.png')"
 
 # Pre-seed xfce4-desktop config to use the dark wallpaper
 RUN cat > /root/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml <<'EOF'

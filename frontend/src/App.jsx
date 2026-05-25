@@ -339,11 +339,26 @@ export default function App() {
 
         /* desktop logo banner */
         .desktop-logo-banner {
-          display: flex; align-items: center; justify-content: center;
-          padding: 16px 0 12px;
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: center;
+          padding: 28px 0 22px;
+          gap: 14px;
           border-bottom: 1px solid rgba(255,255,255,0.06);
           flex-shrink: 0;
           background: #000;
+        }
+        .desktop-brand-name {
+          font-size: 11px; font-weight: 700;
+          color: rgba(255,255,255,0.35);
+          letter-spacing: 0.38em; text-transform: uppercase;
+          user-select: none;
+        }
+        .desktop-brand-tag {
+          font-size: 9px;
+          color: rgba(255,255,255,0.14);
+          letter-spacing: 0.2em; text-transform: uppercase;
+          user-select: none;
+          margin-top: -6px;
         }
       `}</style>
 
@@ -414,7 +429,9 @@ export default function App() {
               <div className="left-panel">
                 {activeTab === 'Desktop' && (
                   <div className="desktop-logo-banner">
-                    <PixelLogo scale={7} />
+                    <PixelLogo scale={8} />
+                    <div className="desktop-brand-name">MnemOS</div>
+                    <div className="desktop-brand-tag">visual workflow builder · ai memory · docker native</div>
                   </div>
                 )}
                 <div className="panel-header">

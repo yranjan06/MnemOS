@@ -445,76 +445,127 @@ const GLYPHS={
   'S':[[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,0],[0,1,1,1,0],[0,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
 };
 
+// katakana charset for decode effect
+const KATA='アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+const rk=()=>KATA[Math.floor(Math.random()*KATA.length)];
+
 const TEXT='MnemOS';
 const TAGLINE='build agents that never forget';
 
 let P,G,S,LG,CW,CH,bigW,bigX,bigY,tagY,tagFontSize;
-let revealed=0,tagChars=0,phase=0,frame=0,blink=true,blinkT=0;
+let revealed=0,phase=0,frame=0,blink=true,blinkT=0;
+let charDecode=[],charXPos=[];
 let animStarted=false;
 
 function gw(ch){const g=GLYPHS[ch];return g?g[0].length:0;}
 function totalBigW(){let w=0;for(let i=0;i<TEXT.length;i++){w+=gw(TEXT[i])*S;if(i<TEXT.length-1)w+=LG;}return w;}
 function letterX(idx){let x=0;for(let i=0;i<idx;i++)x+=gw(TEXT[i])*S+LG;return x;}
+
 function drawGlyph(g,x,y){
-  // ghost unlit dots — LED matrix feel
   ctx.fillStyle='rgba(255,255,255,0.05)';
   for(let r=0;r<g.length;r++)for(let c=0;c<g[r].length;c++)if(!g[r][c])ctx.fillRect(x+c*S,y+r*S,P,P);
-  // solid pixels
   ctx.fillStyle='#fff';
   for(let r=0;r<g.length;r++)for(let c=0;c<g[r].length;c++)if(g[r][c])ctx.fillRect(x+c*S,y+r*S,P,P);
 }
 
+function buildCharDecode(){
+  charDecode=TAGLINE.split('').map((ch,i)=>({
+    ch, locked:false, kata:rk(),
+    startAt:i*3,
+    decodeFor:ch===' '?0:10
+  }));
+}
+
+function computeCharX(){
+  ctx.font=`bold ${tagFontSize}px "Courier New",monospace`;
+  const tw=ctx.measureText(TAGLINE).width;
+  let x=Math.floor((CW-tw)/2);
+  charXPos=TAGLINE.split('').map(ch=>{const p=x;x+=ctx.measureText(ch).width;return p;});
+}
+
 function setup(){
-  CW = cv.offsetWidth || window.innerWidth;
-  const targetLogoW = CW * 0.97;
-  const letterCols = 28;
-  const letterGaps = 5;
-  const LG_RATIO = 1.6;
-  S = Math.floor(targetLogoW / (letterCols + letterGaps * LG_RATIO));
-  P = Math.max(2, Math.floor(S * 0.82));
-  G = S - P;
-  LG = Math.floor(S * LG_RATIO);
-  bigW = totalBigW();
-  bigX = Math.floor((CW - bigW) / 2);
-  bigY = Math.floor(S * 1.2);
-  tagFontSize = Math.max(11, Math.floor(S * 0.85));
-  tagY = bigY + 7*S + Math.floor(S * 1.8);
-  CH = tagY + tagFontSize + Math.floor(S * 1.5);
-  cv.width = CW;
-  cv.height = CH;
+  CW=cv.offsetWidth||window.innerWidth;
+  const LG_RATIO=1.6;
+  S=Math.floor(CW*0.97/(28+5*LG_RATIO));
+  P=Math.max(2,Math.floor(S*0.82));
+  G=S-P;
+  LG=Math.floor(S*LG_RATIO);
+  bigW=totalBigW();
+  bigX=Math.floor((CW-bigW)/2);
+  bigY=Math.floor(S*1.2);
+  tagFontSize=Math.max(11,Math.floor(S*0.85));
+  tagY=bigY+7*S+Math.floor(S*1.8);
+  CH=tagY+tagFontSize+Math.floor(S*1.5);
+  cv.width=CW;
+  cv.height=CH;
+  computeCharX();
 }
 
 function draw(){
   ctx.fillStyle='#000';
   ctx.fillRect(0,0,CW,CH);
-  for(let i=0;i<Math.min(revealed,TEXT.length);i++){const g=GLYPHS[TEXT[i]];if(g)drawGlyph(g,bigX+letterX(i),bigY);}
-  // scanline — sweeps top→bottom every 240 frames, pauses, repeats
-  if(phase>=2){
-    const PERIOD=280,SWEEP=140;
-    const t=frame%PERIOD;
-    if(t<SWEEP){
-      const sy=bigY+(t/SWEEP)*(7*S);
-      const alpha=0.12*(1-Math.abs(t/SWEEP-0.5)*2);
-      ctx.fillStyle=`rgba(255,255,255,${alpha})`;
-      ctx.fillRect(bigX,sy-1,bigW,3);
-    }
+
+  // ghost footprint — unrevealed letters at 3% opacity
+  ctx.fillStyle='rgba(255,255,255,0.03)';
+  for(let i=revealed;i<TEXT.length;i++){
+    const g=GLYPHS[TEXT[i]];if(!g)continue;
+    const x=bigX+letterX(i);
+    for(let r=0;r<g.length;r++)for(let c=0;c<g[r].length;c++)
+      ctx.fillRect(x+c*S,bigY+r*S,P,P);
   }
+
+  // revealed letters
+  for(let i=0;i<Math.min(revealed,TEXT.length);i++){
+    const g=GLYPHS[TEXT[i]];if(g)drawGlyph(g,bigX+letterX(i),bigY);
+  }
+
+  // blinking cursor (phase 0)
   blinkT++;
   if(blinkT%16===0)blink=!blink;
-  if(phase===0&&blink&&revealed<TEXT.length){ctx.fillStyle='#fff';ctx.fillRect(bigX+letterX(revealed),bigY,P,7*S-G);}
-  if(phase>=1){
-    const tag=TAGLINE.slice(0,tagChars);
-    ctx.font=`bold ${tagFontSize}px "Courier New",monospace`;
-    ctx.fillStyle='rgba(255,255,255,0.55)';
-    ctx.textBaseline='top';
-    const tw=ctx.measureText(TAGLINE).width;
-    const tx=Math.floor((CW-tw)/2);
-    ctx.fillText(tag,tx,tagY);
-    if(phase===1&&tagChars<TAGLINE.length&&blink){ctx.fillStyle='rgba(255,255,255,0.55)';ctx.fillRect(tx+ctx.measureText(tag).width+2,tagY,Math.floor(tagFontSize*0.55),tagFontSize);}
+  if(phase===0&&blink&&revealed<TEXT.length){
+    ctx.fillStyle='rgba(255,255,255,0.9)';
+    ctx.fillRect(bigX+letterX(revealed),bigY,P,7*S-G);
   }
+
+  // katakana decode tagline (phase >= 1)
+  if(phase>=1&&charXPos.length){
+    ctx.font=`bold ${tagFontSize}px "Courier New",monospace`;
+    ctx.textBaseline='top';
+    charDecode.forEach((cd,i)=>{
+      const elapsed=frame-cd.startAt;
+      if(elapsed<0)return;
+      let ch,alpha;
+      if(!cd.locked&&elapsed<cd.decodeFor){
+        if(frame%2===0)cd.kata=rk();
+        ch=cd.ch===' '?' ':cd.kata;
+        alpha=+(0.28+0.12*Math.sin(elapsed*1.4)).toFixed(2);
+      } else {
+        cd.locked=true;ch=cd.ch;alpha=0.55;
+      }
+      ctx.fillStyle=`rgba(255,255,255,${alpha})`;
+      ctx.fillText(ch,charXPos[i],tagY);
+    });
+  }
+
+  // vertical CCD sweep bar (phase 2 idle — left→right)
+  if(phase>=2){
+    const PERIOD=320,SWEEP=200;
+    const t=frame%PERIOD;
+    if(t<SWEEP){
+      const sx=bigX+(t/SWEEP)*bigW;
+      const a=+(0.09*(1-Math.pow(Math.abs(t/SWEEP-0.5)*2,1.5))).toFixed(3);
+      ctx.fillStyle=`rgba(255,255,255,${a})`;
+      ctx.fillRect(sx-1,bigY,2,7*S);
+    }
+  }
+
   frame++;
-  if(phase===0){if(frame%10===0&&revealed<TEXT.length)revealed++;if(revealed>=TEXT.length){phase=1;frame=0;}}
-  else if(phase===1){if(frame%3===0&&tagChars<TAGLINE.length)tagChars++;if(tagChars>=TAGLINE.length)phase=2;}
+  if(phase===0){
+    if(frame%10===0&&revealed<TEXT.length)revealed++;
+    if(revealed>=TEXT.length){phase=1;frame=0;buildCharDecode();}
+  } else if(phase===1){
+    if(charDecode.length&&charDecode.every(cd=>cd.locked))phase=2;
+  }
   requestAnimationFrame(draw);
 }
 
@@ -524,10 +575,7 @@ function init(){
 }
 
 let resizeTimer;
-window.addEventListener('resize',()=>{
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(setup, 100);
-});
+window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(setup,100);});
 init();
 </script>
 </body>
